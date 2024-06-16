@@ -1,4 +1,13 @@
-#include "Menu.h"
+#include "Menu/Menu.h"
+
+
+
+
+//do zmiany!!
+/*
+ *algorytmy zmienic zeby osobno wyswietlanie wynikow zeby przekazywac wartosci
+ *
+ * */
 
 int main()
 {
