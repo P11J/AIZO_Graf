@@ -2,164 +2,176 @@
 
 #include <algorithm> 
 #include <iostream>
-#include <iomanip>
 
+
+// Implementacja metody Kruskal_list dla grafu reprezentowanego list¹
 void Alg_Kruskal::Kruskal_list(ListGraph& graph, bool write)
 {
-    int totalEdges = 0;
-    for (int i = 0; i < graph.vertices; ++i)
-    {
-        totalEdges += graph.edgeCounts[i];
-    }
-    Krawedz* krawedzie = new Krawedz[totalEdges];
-    int krawedzieIndex = 0;
+    int V = graph.vertices; // Liczba wierzcho³ków w grafie
+    int E = graph.edges; // Liczba krawêdzi w grafie
+    auto* krawedzie = new Krawedz[E]; // Dynamiczna alokacja pamiêci dla tablicy krawêdzi
 
-    for (int u = 0; u < graph.vertices; ++u)
+    int index = 0; // Indeks do dodawania krawêdzi
+    for (int u = 0; u < V; ++u)
     {
-        for (int j = 0; j < graph.edgeCounts[u]; ++j)
+        for (int i = 0; i < graph.edgeCounts[u]; ++i)
         {
-            auto pCrawl = graph.adjacencyList[u][j];
-            if (u < pCrawl.first) 
-            {
-                krawedzie[krawedzieIndex++] = { u, pCrawl.first, pCrawl.second };
-            }
+            krawedzie[index].pocz = u; // Ustawienie wierzcho³ka pocz¹tkowego
+            krawedzie[index].kon = graph.adjacencyList[u][i].first; // Ustawienie wierzcho³ka koñcowego
+            krawedzie[index].waga = graph.adjacencyList[u][i].second; // Ustawienie wagi krawêdzi
+            ++index; // Przejœcie do nastêpnego indeksu
         }
     }
 
-    sort(krawedzie, krawedzie + krawedzieIndex, [](Krawedz a, Krawedz b) {
+    // Sortowanie krawêdzi wed³ug wagi
+    sort(krawedzie, krawedzie + E, [](Krawedz a, Krawedz b) {
         return a.waga < b.waga;
-        });
+    });
 
-    Podzbior* podzbiory = new Podzbior[graph.vertices];
-    for (int v = 0; v < graph.vertices; ++v) 
+    auto* podzbiory = new Podzbior[V]; // Dynamiczna alokacja pamiêci dla tablicy podzbiorów
+
+    // Inicjalizacja podzbiorów - ka¿dy wierzcho³ek jest swoim w³asnym poprzednikiem i ma rangê 0
+    for (int v = 0; v < V; ++v)
     {
-        podzbiory[v].poprzednik = v;
-        podzbiory[v].rank = 0;
+        podzbiory[v].poprzednik = v; // Ustawienie poprzednika
+        podzbiory[v].rank = 0; // Ustawienie rangi
     }
 
-    Krawedz* wynik = new Krawedz[graph.vertices - 1];
-    int e = 0;
-    int i = 0;
+    auto* wynik = new Krawedz[V]; // Dynamiczna alokacja pamiêci dla tablicy wynikowej MST
+    int e = 0; // Indeks dla wynikowej tablicy krawêdzi
+    int i = 0; // Indeks dla posortowanych krawêdzi
 
-    while (e < graph.vertices - 1 && i < krawedzieIndex)
+    // G³ówna pêtla algorytmu Kruskala
+    while (e < V - 1 && i < E)
     {
-        Krawedz nastepna_krawedz = krawedzie[i++];
-        int x = znajdz(podzbiory, nastepna_krawedz.pocz);
-        int y = znajdz(podzbiory, nastepna_krawedz.kon);
+        Krawedz kolejna_krawedz = krawedzie[i++]; // Pobranie kolejnej krawêdzi
+        int x = znajdz(podzbiory, kolejna_krawedz.pocz); // Znalezienie zbioru dla wierzcho³ka pocz¹tkowego
+        int y = znajdz(podzbiory, kolejna_krawedz.kon); // Znalezienie zbioru dla wierzcho³ka koñcowego
 
+        // Jeœli wierzcho³ki nie nale¿¹ do tego samego zbioru, dodaj krawêdŸ do MST
         if (x != y)
         {
-            wynik[e++] = nastepna_krawedz;
-            zlacz(podzbiory, x, y);
+            wynik[e++] = kolejna_krawedz; // Dodanie krawêdzi do wyniku
+            zlacz(podzbiory, x, y); // Po³¹czenie zbiorów
         }
     }
-    if (write == true)
+
+    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
+    if (write)
     {
-        cout << "Krawedz Waga" << endl;
-        for (int i = 0; i < e; i++)
+        cout << "Krawedzie wchodzace w sklad minimalnego drzewa rozpinajacego (MST):\n";
+        for (int j = 0; j < e; ++j)
         {
-            cout << setw(3) << wynik[i].pocz << ":" << wynik[i].kon << setw(5) << wynik[i].waga << endl;
+            cout << wynik[j].pocz << " -- " << wynik[j].kon << " == " << wynik[j].waga << endl;
         }
     }
-    delete[] podzbiory;
+
+    // Zwolnienie zaalokowanej pamiêci
     delete[] krawedzie;
+    delete[] podzbiory;
     delete[] wynik;
 }
 
+// Implementacja metody Kruskal_matrix dla grafu reprezentowanego macierz¹
 void Alg_Kruskal::Kruskal_matrix(MatrixGraph& graph, bool write)
 {
-    Krawedz* krawedzie = new Krawedz[graph.edges];
-    int krawedzieIndex = 0;
+    int V = graph.vertices; // Liczba wierzcho³ków w grafie
+    int E = graph.edges; // Liczba krawêdzi w grafie
+    auto* krawedzie = new Krawedz[E]; // Dynamiczna alokacja pamiêci dla tablicy krawêdzi
 
-    for (int j = 0; j < graph.edges; j++) 
+    int index = 0; // Indeks do dodawania krawêdzi
+    for (int u = 0; u < V; ++u)
     {
-        int src = -1, dest = -1, weight = 0;
-        for (int i = 0; i < graph.vertices; i++) 
+        for (int v = 0; v < V; ++v)
         {
-            if (graph.incidenceMatrix[i][j] != 0) 
+            if (graph.incidenceMatrix[u][v] != 0)
             {
-                if (src == -1) 
-                {
-                    src = i;
-                    weight = graph.weightsMatrix[j];
-                }
-                else 
-                {
-                    dest = i;
-                    break;
-                }
+                krawedzie[index].pocz = u; // Ustawienie wierzcho³ka pocz¹tkowego
+                krawedzie[index].kon = v; // Ustawienie wierzcho³ka koñcowego
+                krawedzie[index].waga = graph.incidenceMatrix[u][v]; // Ustawienie wagi krawêdzi
+                ++index; // Przejœcie do nastêpnego indeksu
             }
         }
-        if (src != -1 && dest != -1) 
-        {
-            krawedzie[krawedzieIndex++] = { src, dest, weight };
-        }
     }
 
-    sort(krawedzie, krawedzie + krawedzieIndex, [](Krawedz a, Krawedz b) 
-        {
+    // Sortowanie krawêdzi wed³ug wagi
+    sort(krawedzie, krawedzie + E, [](Krawedz a, Krawedz b) {
         return a.waga < b.waga;
-        });
+    });
 
-    Podzbior* podzbiory = new Podzbior[graph.vertices];
-    for (int v = 0; v < graph.vertices; ++v) 
+    auto* podzbiory = new Podzbior[V]; // Dynamiczna alokacja pamiêci dla tablicy podzbiorów
+
+    // Inicjalizacja podzbiorów - ka¿dy wierzcho³ek jest swoim w³asnym poprzednikiem i ma rangê 0
+    for (int v = 0; v < V; ++v)
     {
-        podzbiory[v].poprzednik = v;
-        podzbiory[v].rank = 0;
+        podzbiory[v].poprzednik = v; // Ustawienie poprzednika
+        podzbiory[v].rank = 0; // Ustawienie rangi
     }
 
-    Krawedz* wynik = new Krawedz[graph.vertices - 1];
-    int e = 0;
-    int i = 0;
+    auto* wynik = new Krawedz[V]; // Dynamiczna alokacja pamiêci dla tablicy wynikowej MST
+    int e = 0; // Indeks dla wynikowej tablicy krawêdzi
+    int i = 0; // Indeks dla posortowanych krawêdzi
 
-    while (e < graph.vertices - 1 && i < krawedzieIndex) 
+    // G³ówna pêtla algorytmu Kruskala
+    while (e < V - 1 && i < E)
     {
-        Krawedz nastepna_krawedz = krawedzie[i++];
-        int x = znajdz(podzbiory, nastepna_krawedz.pocz);
-        int y = znajdz(podzbiory, nastepna_krawedz.kon);
+        Krawedz kolejna_krawedz = krawedzie[i++]; // Pobranie kolejnej krawêdzi
+        int x = znajdz(podzbiory, kolejna_krawedz.pocz); // Znalezienie zbioru dla wierzcho³ka pocz¹tkowego
+        int y = znajdz(podzbiory, kolejna_krawedz.kon); // Znalezienie zbioru dla wierzcho³ka koñcowego
 
-        if (x != y) 
+        // Jeœli wierzcho³ki nie nale¿¹ do tego samego zbioru, dodaj krawêdŸ do MST
+        if (x != y)
         {
-            wynik[e++] = nastepna_krawedz;
-            zlacz(podzbiory, x, y);
-        }
-    }
-    if (write == true)
-    {
-        cout << "Krawedz Waga" << endl;
-        for (int i = 0; i < e; i++)
-        {
-            cout << setw(3) << wynik[i].pocz << ":" << wynik[i].kon << setw(5) << wynik[i].waga << endl;
+            wynik[e++] = kolejna_krawedz; // Dodanie krawêdzi do wyniku
+            zlacz(podzbiory, x, y); // Po³¹czenie zbiorów
         }
     }
 
-    delete[] podzbiory;
+    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
+    if (write)
+    {
+        cout << "Krawedzie wchodzace w sklad minimalnego drzewa rozpinajacego (MST):\n";
+        for (int j = 0; j < e; ++j)
+        {
+            cout << wynik[j].pocz << " -- " << wynik[j].kon << " == " << wynik[j].waga << endl;
+        }
+    }
+
+    // Zwolnienie zaalokowanej pamiêci
     delete[] krawedzie;
+    delete[] podzbiory;
     delete[] wynik;
 }
 
+// Funkcja pomocnicza do znajdowania zbioru elementu i
 int Alg_Kruskal::znajdz(Podzbior podzbiory[], int i)
 {
+    // Znalezienie korzenia i ustawienie poprzedników w celu kompresji œcie¿ki
     if (podzbiory[i].poprzednik != i)
+    {
         podzbiory[i].poprzednik = znajdz(podzbiory, podzbiory[i].poprzednik);
+    }
     return podzbiory[i].poprzednik;
 }
 
-void Alg_Kruskal::zlacz(Podzbior subsets[], int x, int y) 
+// Funkcja pomocnicza do ³¹czenia dwóch zbiorów x i y
+void Alg_Kruskal::zlacz(Podzbior podzbiory[], int x, int y)
 {
-    int xroot = znajdz(subsets, x);
-    int yroot = znajdz(subsets, y);
-    if (subsets[xroot].rank < subsets[yroot].rank)
+    int xroot = znajdz(podzbiory, x); // Znalezienie korzenia dla zbioru x
+    int yroot = znajdz(podzbiory, y); // Znalezienie korzenia dla zbioru y
+
+    // £¹czenie drzew wed³ug rangi
+    if (podzbiory[xroot].rank < podzbiory[yroot].rank)
     {
-        subsets[xroot].poprzednik = yroot;
+        podzbiory[xroot].poprzednik = yroot;
     }
-    else if (subsets[xroot].rank > subsets[yroot].rank)
+    else if (podzbiory[xroot].rank > podzbiory[yroot].rank)
     {
-        subsets[yroot].poprzednik = xroot;
+        podzbiory[yroot].poprzednik = xroot;
     }
-    else 
+    else
     {
-        subsets[yroot].poprzednik = xroot;
-        subsets[xroot].rank++;
+        podzbiory[yroot].poprzednik = xroot;
+        podzbiory[xroot].rank++;
     }
 }

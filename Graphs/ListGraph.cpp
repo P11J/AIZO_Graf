@@ -3,112 +3,110 @@
 
 #include <iostream>
 #include <fstream>
-#include <fstream>
 
 using namespace std;
 
+
+// Konstruktor klasy ListGraph inicjalizuj¹cy wartoœci
 ListGraph::ListGraph() : vertices(0), edges(0), edgeCounts(nullptr), adjacencyList(nullptr), shouldDeleteData(true)
-{   
+{
+    // Alokacja pamiêci dla tablicy liczników krawêdzi
     edgeCounts = new int[vertices];
-    for (int i = 0; i < vertices; ++i) 
+    for (int i = 0; i < vertices; ++i)
     {
-        edgeCounts[i] = 0; 
+        edgeCounts[i] = 0; // Inicjalizacja liczników krawêdzi
     }
 
-    adjacencyList = new My_pair<int, int>* [vertices];
-    for (int i = 0; i < vertices; ++i) 
+    // Alokacja pamiêci dla tablicy list s¹siedztwa
+    adjacencyList = new MyPair<int, int>* [vertices];
+    for (int i = 0; i < vertices; ++i)
     {
-        adjacencyList[i] = new My_pair<int, int>[edgeCounts[i]];
-        for (int j = 0; j < edgeCounts[i]; ++j) 
+        adjacencyList[i] = new MyPair<int, int>[edgeCounts[i]]; // Inicjalizacja list s¹siedztwa
+        for (int j = 0; j < edgeCounts[i]; ++j)
         {
-            adjacencyList[i][j] = My_pair<int, int>(0, 0); 
+            adjacencyList[i][j] = MyPair<int, int>(0, 0); // Inicjalizacja par (wierzcho³ek, waga)
         }
     }
 }
 
-
+// Destruktor klasy ListGraph zwalniaj¹cy pamiêæ
 ListGraph::~ListGraph()
 {
-    if (shouldDeleteData)
+    if (shouldDeleteData) // Sprawdzenie, czy dane powinny byæ usuniête
     {
-        if (adjacencyList)
+        if (adjacencyList) // Jeœli lista s¹siedztwa nie jest pusta
         {
             for (int i = 0; i < vertices; i++)
             {
-                delete[] adjacencyList[i];
+                delete[] adjacencyList[i]; // Zwolnienie pamiêci dla ka¿dej listy s¹siedztwa
             }
-            delete[] adjacencyList;
+            delete[] adjacencyList; // Zwolnienie pamiêci dla tablicy list s¹siedztwa
         }
-        if (edgeCounts) delete[] edgeCounts;
+        if (edgeCounts) delete[] edgeCounts; // Zwolnienie pamiêci dla tablicy liczników krawêdzi
     }
-    //shouldDeleteData = true;    
 }
 
-
-
+// Metoda wczytuj¹ca graf z pliku
 void ListGraph::load_graph(string& filename, int mode)
 {
-    ifstream file;
-    file.open(filename);
+    ifstream file; // Strumieñ plikowy do odczytu
+    file.open(filename); // Otwarcie pliku
     if (file.is_open())
     {
-        file >> edges >> vertices;
+        file >> edges >> vertices; // Wczytanie liczby krawêdzi i wierzcho³ków
 
-        edgeCounts = new int[vertices]();
-        adjacencyList = new My_pair<int, int>* [vertices];
+        edgeCounts = new int[vertices](); // Alokacja pamiêci dla tablicy liczników krawêdzi
+        adjacencyList = new MyPair<int, int>* [vertices]; // Alokacja pamiêci dla tablicy list s¹siedztwa
 
-        // Najpierw policzmy liczbê krawêdzi wychodz¹cych z ka¿dego wierzcho³ka
+        // Liczenie liczby krawêdzi wychodz¹cych z ka¿dego wierzcho³ka
         for (int i = 0; i < edges; i++)
         {
             int startVertex, endVertex, weight;
-            file >> startVertex >> endVertex >> weight;
-            edgeCounts[startVertex]++;
+            file >> startVertex >> endVertex >> weight; // Wczytanie wierzcho³ków pocz¹tkowego, koñcowego oraz wagi
+            edgeCounts[startVertex]++; // Zwiêkszenie licznika krawêdzi dla wierzcho³ka pocz¹tkowego
             if (mode == 1)
             {
-                edgeCounts[endVertex]++;
+                edgeCounts[endVertex]++; // Zwiêkszenie licznika krawêdzi dla wierzcho³ka koñcowego w trybie nieskierowanym
             }
         }
 
-        // Teraz alokujemy tablice dla ka¿dej listy s¹siedztwa
+        // Alokacja pamiêci dla list s¹siedztwa
         for (int i = 0; i < vertices; i++)
         {
-            adjacencyList[i] = new My_pair<int, int>[edgeCounts[i]];
-            edgeCounts[i] = 0; // Zresetuj licznik, aby u¿yæ go ponownie podczas wczytywania krawêdzi
+            adjacencyList[i] = new MyPair<int, int>[edgeCounts[i]];
+            edgeCounts[i] = 0; // Zresetowanie liczników krawêdzi
         }
 
-        // Wczytaj plik ponownie, aby wype³niæ listy s¹siedztwa
+        // Wczytanie pliku ponownie, aby wype³niæ listy s¹siedztwa
         file.clear();
         file.seekg(0, ios::beg);
-        file >> edges >> vertices; // Ponownie wczytaj nag³ówek
+        file >> edges >> vertices; // Ponowne wczytanie nag³ówka
 
         for (int i = 0; i < edges; i++)
         {
             int startVertex, endVertex, weight;
-            file >> startVertex >> endVertex >> weight;
-            adjacencyList[startVertex][edgeCounts[startVertex]] = My_pair<int, int>(endVertex, weight);
-            edgeCounts[startVertex]++;
+            file >> startVertex >> endVertex >> weight; // Wczytanie wierzcho³ków pocz¹tkowego, koñcowego oraz wagi
+            adjacencyList[startVertex][edgeCounts[startVertex]] = MyPair<int, int>(endVertex, weight); // Dodanie krawêdzi do listy s¹siedztwa
+            edgeCounts[startVertex]++; // Zwiêkszenie licznika krawêdzi dla wierzcho³ka pocz¹tkowego
             if (mode == 1)
             {
-                adjacencyList[endVertex][edgeCounts[endVertex]] = My_pair<int, int>(startVertex, weight);
-                edgeCounts[endVertex]++;
-
-
+                adjacencyList[endVertex][edgeCounts[endVertex]] = MyPair<int, int>(startVertex, weight); // Dodanie krawêdzi do listy s¹siedztwa w trybie nieskierowanym
+                edgeCounts[endVertex]++; // Zwiêkszenie licznika krawêdzi dla wierzcho³ka koñcowego
             }
         }
-        file.close();
+        file.close(); // Zamkniêcie pliku
         cout << "Odczyt dla listy udany" << endl;
     }
     else
     {
-        cout << "Nie mozna odtworzyc pliku: " << filename << endl << endl;
+        cout << "Nie mozna otworzyc pliku: " << filename << endl << endl;
     }
 }
 
-void displayResultGraph
-
+// Metoda wyœwietlaj¹ca graf
 void ListGraph::display_graph()
 {
-    if (!isGraphValid())
+    if (!isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         cout << "Lista sasiedztwa nie jest poprawnie zaladowana." << endl;
         return;
@@ -127,15 +125,16 @@ void ListGraph::display_graph()
     }
 }
 
-
-bool ListGraph::isGraphValid()
+// Metoda sprawdzaj¹ca, czy graf jest poprawny
+bool ListGraph::isGraphValid() const
 {
-    return adjacencyList != nullptr && edgeCounts != nullptr;
+    return adjacencyList != nullptr && edgeCounts != nullptr; // Graf jest poprawny, jeœli listy s¹siedztwa i liczniki krawêdzi nie s¹ puste
 }
 
+// Metoda zapisuj¹ca graf do pliku
 void ListGraph::save_graph()
 {
-    if (isGraphValid())
+    if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania listy sasiedztwa: " << endl;
@@ -143,19 +142,19 @@ void ListGraph::save_graph()
         filename += ".txt";
         ofstream file;
 
-        file.open(filename);
+        file.open(filename); // Otwarcie pliku do zapisu
         if (file.is_open())
         {
-            file << edges << " " << vertices << endl;
+            file << edges << " " << vertices << endl; // Zapisanie liczby krawêdzi i wierzcho³ków
 
             for (int i = 0; i < vertices; i++)
             {
                 for (int j = 0; j < edgeCounts[i]; j++)
                 {
-                    file << i << " " << adjacencyList[i][j].first << " " << adjacencyList[i][j].second << endl;
+                    file << i << " " << adjacencyList[i][j].first << " " << adjacencyList[i][j].second << endl; // Zapisanie krawêdzi
                 }
             }
-            file.close();
+            file.close(); // Zamkniêcie pliku
             cout << "Zapis udany" << endl;
         }
         else
@@ -163,42 +162,45 @@ void ListGraph::save_graph()
             cout << "Nie mozna otworzyc pliku do zapisu: " << filename << endl;
         }
     }
-    else cout << "Lista sasiedztwa nie zostala poprawnie wczytana. Nie mo¿na zapisac grafu." << endl;
+    else
+    {
+        cout << "Lista sasiedztwa nie zostala poprawnie wczytana. Nie mo¿na zapisac grafu." << endl;
+    }
 }
 
+// Metoda wype³niaj¹ca graf na podstawie obiektu Graph
 void ListGraph::populateFromGraph(Graph& graph)
 {
-    //Clean up previous adjacency list if it exists
-    if (adjacencyList) 
+    // Czyszczenie poprzedniej listy s¹siedztwa, jeœli istnieje
+    if (adjacencyList)
     {
-        for (int i = 0; i < vertices; ++i) 
+        for (int i = 0; i < vertices; ++i)
         {
-            delete[] adjacencyList[i];
+            delete[] adjacencyList[i]; // Zwolnienie pamiêci dla ka¿dej listy s¹siedztwa
         }
-        delete[] adjacencyList;
+        delete[] adjacencyList; // Zwolnienie pamiêci dla tablicy list s¹siedztwa
     }
-    delete[] edgeCounts;
+    delete[] edgeCounts; // Zwolnienie pamiêci dla tablicy liczników krawêdzi
 
-    vertices = graph.vertices;
-    edges = graph.edges;
+    vertices = graph.vertices; // Ustawienie liczby wierzcho³ków
+    edges = graph.edges; // Ustawienie liczby krawêdzi
 
-    edgeCounts = new int[vertices]();
+    edgeCounts = new int[vertices](); // Alokacja pamiêci dla tablicy liczników krawêdzi
 
-    // Initialize adjacency list array
-    adjacencyList = new My_pair<int, int>* [vertices];
-    for (int i = 0; i < vertices; ++i) 
+    // Inicjalizacja tablicy list s¹siedztwa
+    adjacencyList = new MyPair<int, int>* [vertices];
+    for (int i = 0; i < vertices; ++i)
     {
-        adjacencyList[i] = new My_pair<int, int>[edges];
+        adjacencyList[i] = new MyPair<int, int>[edges]; // Alokacja pamiêci dla ka¿dej listy s¹siedztwa
     }
 
-    // Fill the adjacency list and edgeCounts
-    for (int i = 0; i < edges; ++i) 
+    // Wype³nianie listy s¹siedztwa i liczników krawêdzi
+    for (int i = 0; i < edges; ++i)
     {
-        int startVertex = graph.startVertices[i];
-        int endVertex = graph.endVertices[i];
-        int weight = graph.weights[i];
-        adjacencyList[startVertex][edgeCounts[startVertex]] = My_pair<int, int>(endVertex, weight);
-        edgeCounts[startVertex]++;
+        int startVertex = graph.startVertices[i]; // Pobranie wierzcho³ka pocz¹tkowego
+        int endVertex = graph.endVertices[i]; // Pobranie wierzcho³ka koñcowego
+        int weight = graph.weights[i]; // Pobranie wagi krawêdzi
+        adjacencyList[startVertex][edgeCounts[startVertex]] = MyPair<int, int>(endVertex, weight); // Dodanie krawêdzi do listy s¹siedztwa
+        edgeCounts[startVertex]++; // Zwiêkszenie licznika krawêdzi dla wierzcho³ka pocz¹tkowego
     }
 }
-

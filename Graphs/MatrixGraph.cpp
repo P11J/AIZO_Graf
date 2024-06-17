@@ -7,75 +7,83 @@
 using namespace std;
 
 
+// Konstruktor klasy MatrixGraph inicjalizuj¹cy wartoœci
 MatrixGraph::MatrixGraph() : vertices(0), edges(0), incidenceMatrix(nullptr), weightsMatrix(nullptr), shouldDeleteData(true)
 {
+    // Alokacja pamiêci dla macierzy incydencji
     incidenceMatrix = new int* [vertices];
-    for (int i = 0; i < vertices; ++i) 
+    for (int i = 0; i < vertices; ++i)
     {
-        incidenceMatrix[i] = new int[edges];
-        for (int j = 0; j < edges; ++j) 
+        incidenceMatrix[i] = new int[edges]; // Alokacja dla krawêdzi wychodz¹cych z wierzcho³ka
+        for (int j = 0; j < edges; ++j)
         {
-            incidenceMatrix[i][j] = 0; 
+            incidenceMatrix[i][j] = 0; // Inicjalizacja macierzy incydencji zerami
         }
     }
+
+    // Alokacja pamiêci dla tablicy wag krawêdzi
     weightsMatrix = new int[edges];
-    for (int i = 0; i < edges; ++i) 
+    for (int i = 0; i < edges; ++i)
     {
-        weightsMatrix[i] = 0; 
+        weightsMatrix[i] = 0; // Inicjalizacja wag zerami
     }
 }
 
+// Destruktor klasy MatrixGraph zwalniaj¹cy pamiêæ
 MatrixGraph::~MatrixGraph()
 {
-    if (shouldDeleteData)
+    if (shouldDeleteData) // Sprawdzenie, czy dane powinny byæ usuniête
     {
-        if (incidenceMatrix)
+        if (incidenceMatrix) // Jeœli macierz incydencji nie jest pusta
         {
             for (int i = 0; i < vertices; i++)
             {
-                delete[] incidenceMatrix[i];
+                delete[] incidenceMatrix[i]; // Zwolnienie pamiêci dla ka¿dej wiersza macierzy incydencji
             }
-            delete[] incidenceMatrix;
+            delete[] incidenceMatrix; // Zwolnienie pamiêci dla tablicy macierzy incydencji
         }
-        if (weightsMatrix) delete[] weightsMatrix;
+        if (weightsMatrix) delete[] weightsMatrix; // Zwolnienie pamiêci dla tablicy wag krawêdzi
     }
-    //else shouldDeleteData = true;
 }
 
+// Metoda wczytuj¹ca graf z pliku
 void MatrixGraph::load_graph(string& filename, int type)
 {
-    ifstream file;
-    file.open(filename);
+    ifstream file; // Strumieñ plikowy do odczytu
+    file.open(filename); // Otwarcie pliku
     if (file.is_open())
     {
-            file >> edges >> vertices;
+        file >> edges >> vertices; // Wczytanie liczby krawêdzi i wierzcho³ków
 
-            incidenceMatrix = new int* [vertices];
-            weightsMatrix = new int[edges];
-            for (int i = 0; i < vertices; i++)
-            {
-                incidenceMatrix[i] = new int[edges]();
-            }
+        // Alokacja pamiêci dla macierzy incydencji i tablicy wag
+        incidenceMatrix = new int* [vertices];
+        weightsMatrix = new int[edges];
+        for (int i = 0; i < vertices; i++)
+        {
+            incidenceMatrix[i] = new int[edges](); // Alokacja pamiêci i inicjalizacja zerami
+        }
 
-            for (int i = 0; i < edges; i++)
-            {
-                int startVertex = 0, endVertex = 0;
-                file >> startVertex >> endVertex >> weightsMatrix[i];
-                incidenceMatrix[startVertex][i] = 1;
-                incidenceMatrix[endVertex][i] = type;
-            }
-            file.close();
-            cout << "Odczyt dla macierzy udany" << endl;
+        // Wczytanie krawêdzi z pliku i wype³nienie macierzy incydencji oraz tablicy wag
+        for (int i = 0; i < edges; i++)
+        {
+            int startVertex = 0, endVertex = 0;
+            file >> startVertex >> endVertex >> weightsMatrix[i]; // Wczytanie wierzcho³ków pocz¹tkowego, koñcowego oraz wagi
+            incidenceMatrix[startVertex][i] = 1; // Ustawienie incydencji dla wierzcho³ka pocz¹tkowego
+            incidenceMatrix[endVertex][i] = type; // Ustawienie incydencji dla wierzcho³ka koñcowego
+        }
+        file.close(); // Zamkniêcie pliku
+        cout << "Odczyt dla macierzy udany" << endl;
     }
     else
     {
-        cout << "Nie mozna odtworzyc pliku: " << filename << endl << endl;
+        cout << "Nie mozna otworzyc pliku: " << filename << endl << endl;
     }
 }
 
-void MatrixGraph::display_graph()
+// Metoda wyœwietlaj¹ca graf
+void MatrixGraph::display_graph() const
 {
-    if (!isGraphValid())
+    if (!isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         cout << "Macierz incydencji nie jest poprawnie zaladowana." << endl;
         return;
@@ -86,26 +94,28 @@ void MatrixGraph::display_graph()
     {
         for (int j = 0; j < edges; j++)
         {
-            cout << setw(3) << incidenceMatrix[i][j] << " ";
+            cout << setw(3) << incidenceMatrix[i][j] << " "; // Wyœwietlanie macierzy incydencji
         }
         cout << endl;
     }
     cout << "Tablica wag : " << endl;
     for (int i = 0; i < edges; i++)
     {
-        cout << setw(3) << weightsMatrix[i] << " ";
+        cout << setw(3) << weightsMatrix[i] << " "; // Wyœwietlanie tablicy wag
     }
     cout << endl;
 }
 
-bool MatrixGraph::isGraphValid()
+// Metoda sprawdzaj¹ca, czy graf jest poprawny
+bool MatrixGraph::isGraphValid() const
 {
-    return incidenceMatrix != nullptr && weightsMatrix != nullptr;
+    return incidenceMatrix != nullptr && weightsMatrix != nullptr; // Graf jest poprawny, jeœli macierz incydencji i tablica wag nie s¹ puste
 }
 
-void MatrixGraph::save_graph_naj()
+// Metoda zapisuj¹ca graf do pliku (naj)
+void MatrixGraph::save_graph_naj() const
 {
-    if (isGraphValid())
+    if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania macierzy incydencji: " << endl;
@@ -113,9 +123,9 @@ void MatrixGraph::save_graph_naj()
         filename += ".txt";
         ofstream file;
 
-        file.open(filename);
+        file.open(filename); // Otwarcie pliku do zapisu
         if (file.is_open()) {
-            file << edges << " " << vertices << endl;
+            file << edges << " " << vertices << endl; // Zapisanie liczby krawêdzi i wierzcho³ków
             for (int i = 0; i < edges; i++)
             {
                 int j2 = 0;
@@ -124,7 +134,7 @@ void MatrixGraph::save_graph_naj()
                 {
                     if (incidenceMatrix[j1][i] == 1)
                     {
-                        startVertex = j1;
+                        startVertex = j1; // Znalezienie wierzcho³ka pocz¹tkowego
                         j2 = j1;
                         break;
                     }
@@ -133,13 +143,13 @@ void MatrixGraph::save_graph_naj()
                 {
                     if (incidenceMatrix[j2][i] == 1)
                     {
-                        startVertex = j2;
+                        startVertex = j2; // Znalezienie wierzcho³ka koñcowego
                         break;
                     }
                 }
-                file << startVertex << " " << endVertex << " " << weightsMatrix[i] << endl;
+                file << startVertex << " " << endVertex << " " << weightsMatrix[i] << endl; // Zapisanie krawêdzi do pliku
             }
-            file.close();
+            file.close(); // Zamkniêcie pliku
             cout << "Zapis udany" << endl;
         }
         else
@@ -147,12 +157,16 @@ void MatrixGraph::save_graph_naj()
             cout << "Nie mozna otworzyc pliku do zapisu: " << filename << endl;
         }
     }
-    else cout << "Macierz incydencji nie zostala poprawnie wczytana. Nie mozna zapisac grafu." << endl;
+    else
+    {
+        cout << "Macierz incydencji nie zostala poprawnie wczytana. Nie mozna zapisac grafu." << endl;
+    }
 }
 
-void MatrixGraph::save_graph_mst()
+// Metoda zapisuj¹ca graf do pliku (mst)
+void MatrixGraph::save_graph_mst() const
 {
-    if (isGraphValid())
+    if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania macierzy incydencji: " << endl;
@@ -160,20 +174,20 @@ void MatrixGraph::save_graph_mst()
         filename += ".txt";
         ofstream file;
 
-        file.open(filename);
+        file.open(filename); // Otwarcie pliku do zapisu
         if (file.is_open()) {
-            file << edges << " " << vertices << endl;
+            file << edges << " " << vertices << endl; // Zapisanie liczby krawêdzi i wierzcho³ków
             for (int i = 0; i < edges; i++)
             {
                 int startVertex = -1, endVertex = -1;
                 for (int j = 0; j < vertices; j++)
                 {
-                    if (incidenceMatrix[j][i] == 1) startVertex = j;
-                    if (incidenceMatrix[j][i] == -1) endVertex = j;
+                    if (incidenceMatrix[j][i] == 1) startVertex = j; // Znalezienie wierzcho³ka pocz¹tkowego
+                    if (incidenceMatrix[j][i] == -1) endVertex = j; // Znalezienie wierzcho³ka koñcowego
                 }
-                file << startVertex << " " << endVertex << " " << weightsMatrix[i] << endl;
+                file << startVertex << " " << endVertex << " " << weightsMatrix[i] << endl; // Zapisanie krawêdzi do pliku
             }
-            file.close();
+            file.close(); // Zamkniêcie pliku
             cout << "Zapis udany" << endl;
         }
         else
@@ -181,43 +195,48 @@ void MatrixGraph::save_graph_mst()
             cout << "Nie mozna otworzyc pliku do zapisu: " << filename << endl;
         }
     }
-    else cout << "Macierz incydencji nie zostala poprawnie wczytana. Nie mozna zapisac grafu." << endl;
+    else
+    {
+        cout << "Macierz incydencji nie zostala poprawnie wczytana. Nie mozna zapisac grafu." << endl;
+    }
 }
 
+// Metoda wype³niaj¹ca graf na podstawie obiektu Graph
 void MatrixGraph::populateFromGraph(Graph& graph, int type)
 {
-    // Clean up previous matrices if they exist
-    if (incidenceMatrix) 
+    // Czyszczenie poprzednich macierzy, jeœli istniej¹
+    if (incidenceMatrix)
     {
-        for (int i = 0; i < vertices; ++i) 
+        for (int i = 0; i < vertices; ++i)
         {
-            delete[] incidenceMatrix[i];
+            delete[] incidenceMatrix[i]; // Zwolnienie pamiêci dla ka¿dej wiersza macierzy incydencji
         }
-        delete[] incidenceMatrix;
+        delete[] incidenceMatrix; // Zwolnienie pamiêci dla tablicy macierzy incydencji
     }
-    delete[] weightsMatrix;
+    delete[] weightsMatrix; // Zwolnienie pamiêci dla tablicy wag
 
-    vertices = graph.vertices;
-    edges = graph.edges;
+    vertices = graph.vertices; // Ustawienie liczby wierzcho³ków
+    edges = graph.edges; // Ustawienie liczby krawêdzi
 
+    // Alokacja pamiêci dla macierzy incydencji i tablicy wag
     incidenceMatrix = new int* [vertices];
     weightsMatrix = new int[edges];
 
-    // Initialize incidence matrix with zeros
-    for (int i = 0; i < vertices; ++i) 
+    // Inicjalizacja macierzy incydencji zerami
+    for (int i = 0; i < vertices; ++i)
     {
         incidenceMatrix[i] = new int[edges]();
     }
 
-    // Populate incidence matrix and weights matrix
-    for (int i = 0; i < edges; ++i) 
+    // Wype³nienie macierzy incydencji i tablicy wag
+    for (int i = 0; i < edges; ++i)
     {
-        int startVertex = graph.startVertices[i];
-        int endVertex = graph.endVertices[i];
-        int weight = graph.weights[i];
+        int startVertex = graph.startVertices[i]; // Pobranie wierzcho³ka pocz¹tkowego
+        int endVertex = graph.endVertices[i]; // Pobranie wierzcho³ka koñcowego
+        int weight = graph.weights[i]; // Pobranie wagi krawêdzi
 
-        incidenceMatrix[startVertex][i] = 1;
-        incidenceMatrix[endVertex][i] = type;
-        weightsMatrix[i] = weight;
+        incidenceMatrix[startVertex][i] = 1; // Ustawienie incydencji dla wierzcho³ka pocz¹tkowego
+        incidenceMatrix[endVertex][i] = type; // Ustawienie incydencji dla wierzcho³ka koñcowego
+        weightsMatrix[i] = weight; // Ustawienie wagi krawêdzi
     }
 }

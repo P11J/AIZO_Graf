@@ -12,6 +12,6 @@
 int main()
 {
     Menu menu;
-    menu.f_menu();
+    Menu::f_menu();
     return 0;
 }

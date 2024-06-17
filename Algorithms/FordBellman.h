@@ -9,10 +9,10 @@ class FordBellman
 {
 public:
     // Metoda implementuj¹ca algorytm Forda-Bellmana dla grafu macierzowego
-    void Ford_Bellman_matrix(MatrixGraph& graph, int start, int end, bool write);
+    static void fordBellmanMatrix(MatrixGraph& graph, int startVertex, int endVertex);
 
     // Metoda implementuj¹ca algorytm Forda-Bellmana dla grafu listowego
-    void Ford_Bellman_list(ListGraph& graph, int start, int end, bool write);
+    static void fordBellmanList(ListGraph& graph, int startVertex, int endVertex);
 };
 #endif //ALG_FORD_BELLMAN
 

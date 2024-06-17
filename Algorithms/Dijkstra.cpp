@@ -1,99 +1,174 @@
-#include "Dijkstra.h" // Do³¹czenie pliku nag³ówkowego dla algorytmu Dijkstry
+#include "Dijkstra.h"
 
-#include <iostream> // Do³¹czenie biblioteki wejœcia-wyjœcia
-#include <iomanip> // Do³¹czenie biblioteki dla manipulacji strumieniami wejœcia-wyjœcia
+#include <iostream>
+#include <algorithm>
 
-// Implementacja metody Dijkstra_list dla grafu reprezentowanego list¹
-void Alg_Dijkstra::Dijkstra_list(ListGraph& graph, int start, int end, bool write)
+// Implementacja dla grafu reprezentowanego list¹
+
+void Dijkstra::dijkstraList(ListGraph& graph, int startVertex, int endVertex)
 {
-    int vertices = graph.vertices; // Pobranie liczby wierzcho³ków w grafie
+    int vertices = graph.vertices; // Liczba wierzcho³ków w grafie
+    int* distance = new int[vertices]; // Tablica odleg³oœci od wierzcho³ka startowego
+    bool* sptSet = new bool[vertices]; // Tablica œledz¹ca wierzcho³ki w zbiorze SPT (Shortest Path Tree)
+    auto* priorityQueue = new MyPair<int, int>[vertices]; // Kolejka priorytetowa przechowuj¹ca pary (wierzcho³ek, odleg³oœæ)
 
-    // Dynamiczna alokacja pamiêci dla kopca priorytetowego, tablicy odleg³oœci i tablicy poprzedników
-    My_pair<int, int>* pq = new My_pair<int, int>[vertices]; // Kopiec priorytetowy przechowuj¹cy pary (odleg³oœæ, wierzcho³ek)
-    int* dist = new int[vertices]; // Tablica odleg³oœci przechowuj¹ca najkrótsze odleg³oœci od wierzcho³ka startowego
-    int* predecessors = new int[vertices]; // Tablica poprzedników przechowuj¹ca poprzedników na najkrótszych œcie¿kach
-    int size = vertices; // Rozmiar kopca priorytetowego
-
-    // Inicjalizacja tablicy odleg³oœci, kopca priorytetowego i poprzedników
-    for (int i = 0; i < vertices; ++i)
+    // Inicjalizacja tablic
+    for (int i = 0; i < vertices; i++)
     {
-        dist[i] = INT_MAX; // Inicjalizacja odleg³oœci jako nieskoñczonoœæ
-        pq[i] = my_make_pair(INT_MAX, i); // Inicjalizacja kopca priorytetowego z par¹ (nieskoñczonoœæ, wierzcho³ek)
-        predecessors[i] = -1; // Inicjalizacja poprzedników jako -1, co oznacza brak poprzednika
+        distance[i] = INT_MAX; // Ustawienie wszystkich odleg³oœci na nieskoñczonoœæ
+        sptSet[i] = false; // Ustawienie, ¿e ¿aden wierzcho³ek nie jest jeszcze w SPT
+        priorityQueue[i] = MyPair<int, int>(i, distance[i]); // Dodanie pary (wierzcho³ek, odleg³oœæ) do kolejki
     }
 
-    dist[start] = 0; // Odleg³oœæ wierzcho³ka startowego do samego siebie wynosi 0
-    pq[start] = my_make_pair(0, start); // Ustawienie odleg³oœci wierzcho³ka startowego w kopcu priorytetowym
-    heapify(pq, dist, size, 0); // Przywrócenie w³asnoœci kopca priorytetowego
+    distance[startVertex] = 0; // Ustawienie odleg³oœci pocz¹tkowej na 0
+    priorityQueue[startVertex].second = 0; // Aktualizacja odleg³oœci w kolejce priorytetowej
 
-    // Pêtla g³ówna algorytmu Dijkstry
-    while (size > 0)
+    int size = vertices; // Rozmiar kolejki priorytetowej
+
+    // G³ówna pêtla algorytmu Dijkstry
+    for (int count = 0; count < vertices - 1; count++)
     {
-        My_pair<int, int> minPair = extractMin(pq, dist, size); // Wyci¹gniêcie wierzcho³ka o minimalnej odleg³oœci z kopca
-        int u = minPair.second; // Pobranie numeru wierzcho³ka z pary
+        heapify(priorityQueue, distance, size, 0); // Przywracanie w³asnoœci kopca
+        int u = priorityQueue[0].first; // Pobranie wierzcho³ka z minimaln¹ odleg³oœci¹
+        sptSet[u] = true; // Dodanie wierzcho³ka do zbioru SPT
+        priorityQueue[0] = priorityQueue[size - 1]; // Usuniêcie wierzcho³ka z kolejki priorytetowej
+        size--; // Zmniejszenie rozmiaru kolejki
 
-        // Przegl¹d s¹siadów wierzcho³ka u
-        for (int i = 0; i < graph.edgeCounts[u]; ++i)
+        // Przegl¹danie s¹siadów wierzcho³ka u
+        for (int j = 0; j < graph.edgeCounts[u]; j++)
         {
-            My_pair<int, int> neighbor = graph.adjacencyList[u][i]; // Pobranie s¹siada wierzcho³ka u
-            int v = neighbor.first; // Numer s¹siada
-            int weight = neighbor.second; // Waga krawêdzi do s¹siada
-
-            // Aktualizacja odleg³oœci s¹siada v, jeœli znaleziono krótsz¹ œcie¿kê
-            if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+            int v = graph.adjacencyList[u][j].first; // S¹siaduj¹cy wierzcho³ek
+            int weight = graph.adjacencyList[u][j].second; // Waga krawêdzi
+            // Aktualizacja odleg³oœci, jeœli znaleziono krótsz¹ œcie¿kê
+            if (!sptSet[v] && distance[u] != INT_MAX && distance[u] + weight < distance[v])
             {
-                dist[v] = dist[u] + weight; // Zaktualizowanie odleg³oœci s¹siada v
-                predecessors[v] = u; // Ustawienie poprzednika s¹siada v
-                decreaseKey(pq, dist, size, v, dist[v]); // Zmniejszenie wartoœci klucza w kopcu priorytetowym
+                distance[v] = distance[u] + weight; // Aktualizacja odleg³oœci
+                // Aktualizacja odleg³oœci w kolejce priorytetowej
+                for (int k = 0; k < size; k++)
+                {
+                    if (priorityQueue[k].first == v)
+                    {
+                        priorityQueue[k].second = distance[v];
+                        break;
+                    }
+                }
+                heapify(priorityQueue, distance, size, 0); // Przywracanie w³asnoœci kopca
             }
         }
     }
 
-    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
-    if (write == true)
+    //Wypisanie wyniku
+
+    cout << "Format:\nWierzcholek: odleglosc od wierzcholka zrodlowego" << endl;
+    for (int i = 0; i < vertices; i++)
+        cout << i << ": " << distance[i] << endl; // Wypisanie odleg³oœci dla ka¿dego wierzcho³ka
+
+    // Zwolnienie zaalokowanej pamiêci
+    delete[] distance;
+    delete[] sptSet;
+    delete[] priorityQueue;
+}
+
+
+void Dijkstra::dijkstraMatrix(MatrixGraph& graph, int startVertex, int endVertex) {
+    int vertices = graph.vertices; // Liczba wierzcho³ków w grafie
+    int* priorityQueue = new int[vertices]; // Kolejka priorytetowa jako tablica wierzcho³ków
+    int* distance = new int[vertices]; // Tablica odleg³oœci od wierzcho³ka startowego
+    int* predecessors = new int[vertices]; // Tablica poprzedników do œledzenia œcie¿ki
+    int size = vertices; // Rozmiar kolejki priorytetowej
+
+    // Inicjalizacja tablic
+    for (int i = 0; i < vertices; ++i)
     {
-        cout << "Koszt najkrotszej sciezki z wierzcholka " << start << " do wierzcholka " << end << " wynosi: " << dist[end] << endl;
-        cout << "Znaleziona sciezka: ";
-        int currentVertex = end;
-        while (currentVertex != -1)
-        {
-            cout << currentVertex; // Wyœwietlenie bie¿¹cego wierzcho³ka
-            currentVertex = predecessors[currentVertex]; // Przejœcie do poprzednika
-            if (currentVertex != -1)
-                cout << " -> "; // Separator strza³kowy
-        }
-        cout << endl;
+        distance[i] = INT_MAX; // Ustawienie wszystkich odleg³oœci na nieskoñczonoœæ
+        priorityQueue[i] = i; // Dodanie wierzcho³ka do kolejki
+        predecessors[i] = -1; // Inicjalizacja poprzedników
     }
 
-    // Zwolnienie zaalokowanej pamiêci dla kopca priorytetowego, tablicy odleg³oœci i tablicy poprzedników
-    delete[] pq;
-    delete[] dist;
+    distance[startVertex] = 0; // Ustawienie odleg³oœci pocz¹tkowej na 0
+    heapify(priorityQueue, distance, size, 0); // Przywracanie w³asnoœci kopca
+
+    // G³ówna pêtla algorytmu Dijkstry
+    while (size > 0)
+    {
+        int minDistanceVertex = extractMin(priorityQueue, distance, size); // Pobranie wierzcho³ka z minimaln¹ odleg³oœci¹
+
+        // Przegl¹danie wszystkich krawêdzi incydentnych z wierzcho³kiem minDistanceVertex
+        for (int i = 0; i < graph.edges; ++i)
+        {
+            if (graph.incidenceMatrix[minDistanceVertex][i] == 1)
+            {
+                for (int v = 0; v < vertices; ++v)
+                {
+                    if (v != minDistanceVertex && graph.incidenceMatrix[v][i] == -1)
+                    {
+                        int weight = graph.weightsMatrix[i]; // Waga krawêdzi
+
+                        // Aktualizacja odleg³oœci, jeœli znaleziono krótsz¹ œcie¿kê
+                        if (distance[minDistanceVertex] != INT_MAX && distance[minDistanceVertex] + weight < distance[v]) {
+                            distance[v] = distance[minDistanceVertex] + weight; // Aktualizacja odleg³oœci
+                            predecessors[v] = minDistanceVertex; // Ustawienie poprzednika
+                            decreaseKey(priorityQueue, distance, size, v, distance[v]); // Aktualizacja kolejki priorytetowej
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Wypisanie wyników
+
+    cout << "Koszt najkrotszej sciezki z wierzcholka " << startVertex << " do wierzcholka " << endVertex << " wynosi: " << distance[endVertex] << endl;
+    cout << "Znaleziona sciezka: ";
+    int currentVertex = endVertex;
+    while (currentVertex != -1)
+    {
+        cout << currentVertex; // Wypisanie bie¿¹cego wierzcho³ka na œcie¿ce
+        currentVertex = predecessors[currentVertex]; // Przejœcie do poprzednika
+        if (currentVertex != -1)
+            cout << " -> ";
+    }
+    cout << endl;
+
+
+    // Zwolnienie zaalokowanej pamiêci
+    delete[] priorityQueue;
+    delete[] distance;
     delete[] predecessors;
 }
 
+
 // Metoda zamieniaj¹ca dwie pary (odleg³oœæ, wierzcho³ek)
-void Alg_Dijkstra::swap(My_pair<int, int>& a, My_pair<int, int>& b)
+void Dijkstra::swap(MyPair<int, int>& a, MyPair<int, int>& b)
 {
-    My_pair<int, int> temp = a; // Przypisanie wartoœci a do zmiennej tymczasowej
-    a = b; // Przypisanie wartoœci b do a
-    b = temp; // Przypisanie wartoœci zmiennej tymczasowej do b
+    MyPair<int, int> temp = a;
+    a = b;
+    b = temp;
+}
+
+void Dijkstra::swap(int& a, int& b)
+{
+    int temp = a;
+    a = b;
+    b = temp;
 }
 
 // Metoda przywracaj¹ca w³asnoœæ kopca dla par (odleg³oœæ, wierzcho³ek)
-void Alg_Dijkstra::heapify(My_pair<int, int>* pq, int* dist, int n, int i)
+
+void Dijkstra::heapify(MyPair<int, int>* priorityQueue, int* distance, int n, int i)
 {
     int smallest = i; // Ustawienie najmniejszego jako bie¿¹cy indeks
     int left = 2 * i + 1; // Indeks lewego dziecka
     int right = 2 * i + 2; // Indeks prawego dziecka
 
     // Sprawdzenie, czy lewe dziecko jest mniejsze od najmniejszego elementu
-    if (left < n && dist[pq[left].first] < dist[pq[smallest].first])
+    if (left < n && distance[priorityQueue[left].first] < distance[priorityQueue[smallest].first])
     {
         smallest = left; // Ustawienie najmniejszego jako lewego dziecka
     }
 
     // Sprawdzenie, czy prawe dziecko jest mniejsze od najmniejszego elementu
-    if (right < n && dist[pq[right].first] < dist[pq[smallest].first])
+    if (right < n && distance[priorityQueue[right].first] < distance[priorityQueue[smallest].first])
     {
         smallest = right; // Ustawienie najmniejszego jako prawego dziecka
     }
@@ -101,70 +176,71 @@ void Alg_Dijkstra::heapify(My_pair<int, int>* pq, int* dist, int n, int i)
     // Jeœli najmniejszy element nie jest bie¿¹cym elementem, zamieñ je i zrekuruj
     if (smallest != i)
     {
-        swap(pq[i], pq[smallest]); // Zamiana elementu bie¿¹cego z najmniejszym
-        heapify(pq, dist, n, smallest); // Rekurencyjne przywracanie w³asnoœci kopca
+        swap(priorityQueue[i], priorityQueue[smallest]); // Zamiana elementu bie¿¹cego z najmniejszym
+        heapify(priorityQueue, distance, n, smallest); // Rekurencyjne przywracanie w³asnoœci kopca
     }
 }
 
+
 // Metoda usuwaj¹ca i zwracaj¹ca element minimalny z kopca dla par (odleg³oœæ, wierzcho³ek)
-My_pair<int, int> Alg_Dijkstra::extractMin(My_pair<int, int>* pq, int* dist, int& size)
+MyPair<int, int> Dijkstra::extractMin(MyPair<int, int>* priorityQueue, int* distance, int& size)
 {
     if (size <= 0)
     {
-        return my_make_pair(INT_MAX, -1); // Zwróæ parê z maksymaln¹ wartoœci¹ i -1, jeœli kopiec jest pusty
+        return makeMyPair(INT_MAX, -1); // Zwróæ parê z maksymaln¹ wartoœci¹ i -1, jeœli kopiec jest pusty
     }
 
     if (size == 1)
     {
         size--; // Zmniejsz rozmiar kopca
-        return pq[0]; // Zwróæ jedyny element w kopcu
+        return priorityQueue[0]; // Zwróæ jedyny element w kopcu
     }
 
-    My_pair<int, int> root = pq[0]; // Pobierz element korzenia
-    pq[0] = pq[size - 1]; // Przenieœ ostatni element do korzenia
+    MyPair<int, int> root = priorityQueue[0]; // Pobierz element korzenia
+    priorityQueue[0] = priorityQueue[size - 1]; // Przenieœ ostatni element do korzenia
     size--; // Zmniejsz rozmiar kopca
-    heapify(pq, dist, size, 0); // Przywróæ w³asnoœæ kopca
+    heapify(priorityQueue, distance, size, 0); // Przywróæ w³asnoœæ kopca
 
     return root; // Zwróæ element korzenia
 }
 
 // Metoda zmniejszaj¹ca wartoœæ klucza w kopcu dla par (odleg³oœæ, wierzcho³ek)
-void Alg_Dijkstra::decreaseKey(My_pair<int, int>* pq, int* dist, int size, int vertex, int newDist)
+void Dijkstra::decreaseKey(MyPair<int, int>* priorityQueue, int* distance, int size, int vertex, int newDistance)
 {
     int i;
     for (i = 0; i < size; ++i)
     {
-        if (pq[i].second == vertex)
+        if (priorityQueue[i].second == vertex)
         {
-            dist[vertex] = newDist; // Zaktualizowanie wartoœci odleg³oœci dla wierzcho³ka
-            pq[i].first = newDist; // Zaktualizowanie wartoœci klucza w kopcu
+            distance[vertex] = newDistance; // Zaktualizowanie wartoœci odleg³oœci dla wierzcho³ka
+            priorityQueue[i].first = newDistance; // Zaktualizowanie wartoœci klucza w kopcu
             break;
         }
     }
 
     // Przywracanie w³asnoœci kopca po zmniejszeniu wartoœci klucza
-    while (i != 0 && pq[i].first < pq[(i - 1) / 2].first)
+    while (i != 0 && priorityQueue[i].first < priorityQueue[(i - 1) / 2].first)
     {
-        swap(pq[i], pq[(i - 1) / 2]); // Zamiana elementu bie¿¹cego z rodzicem
+        swap(priorityQueue[i], priorityQueue[(i - 1) / 2]); // Zamiana elementu bie¿¹cego z rodzicem
         i = (i - 1) / 2; // Przesuniêcie indeksu na rodzica
     }
 }
 
 // Metoda przywracaj¹ca w³asnoœæ kopca
-void Alg_Dijkstra::heapify(int* pq, int* dist, int n, int i)
+void Dijkstra::heapify(int* priorityQueue, int* distance, int n, int i)
 {
     int smallest = i; // Ustawienie najmniejszego jako bie¿¹cy indeks
     int left = 2 * i + 1; // Indeks lewego dziecka
     int right = 2 * i + 2; // Indeks prawego dziecka
 
     // Sprawdzenie, czy lewe dziecko jest mniejsze od najmniejszego elementu
-    if (left < n && dist[pq[left]] < dist[pq[smallest]])
+    if (left < n && distance[priorityQueue[left]] < distance[priorityQueue[smallest]])
     {
         smallest = left; // Ustawienie najmniejszego jako lewego dziecka
     }
 
     // Sprawdzenie, czy prawe dziecko jest mniejsze od najmniejszego elementu
-    if (right < n && dist[pq[right]] < dist[pq[smallest]])
+    if (right < n && distance[priorityQueue[right]] < distance[priorityQueue[smallest]])
     {
         smallest = right; // Ustawienie najmniejszego jako prawego dziecka
     }
@@ -172,13 +248,13 @@ void Alg_Dijkstra::heapify(int* pq, int* dist, int n, int i)
     // Jeœli najmniejszy element nie jest bie¿¹cym elementem, zamieñ je i zrekuruj
     if (smallest != i)
     {
-        swap(pq[i], pq[smallest]); // Zamiana elementu bie¿¹cego z najmniejszym
-        heapify(pq, dist, n, smallest); // Rekurencyjne przywracanie w³asnoœci kopca
+        swap(priorityQueue[i], priorityQueue[smallest]); // Zamiana elementu bie¿¹cego z najmniejszym
+        heapify(priorityQueue, distance, n, smallest); // Rekurencyjne przywracanie w³asnoœci kopca
     }
 }
 
 // Metoda usuwaj¹ca i zwracaj¹ca element minimalny z kopca
-int Alg_Dijkstra::extractMin(int* pq, int* dist, int& size)
+int Dijkstra::extractMin(int* priorityQueue, int* distance, int& size)
 {
     if (size <= 0)
     {
@@ -188,34 +264,34 @@ int Alg_Dijkstra::extractMin(int* pq, int* dist, int& size)
     if (size == 1)
     {
         size--; // Zmniejsz rozmiar kopca
-        return pq[0]; // Zwróæ jedyny element w kopcu
+        return priorityQueue[0]; // Zwróæ jedyny element w kopcu
     }
 
-    int root = pq[0]; // Pobierz element korzenia
-    pq[0] = pq[size - 1]; // Przenieœ ostatni element do korzenia
+    int root = priorityQueue[0]; // Pobierz element korzenia
+    priorityQueue[0] = priorityQueue[size - 1]; // Przenieœ ostatni element do korzenia
     size--; // Zmniejsz rozmiar kopca
-    heapify(pq, dist, size, 0); // Przywróæ w³asnoœæ kopca
+    heapify(priorityQueue, distance, size, 0); // Przywróæ w³asnoœæ kopca
 
     return root; // Zwróæ element korzenia
 }
 
 // Metoda zmniejszaj¹ca wartoœæ klucza w kopcu
-void Alg_Dijkstra::decreaseKey(int* pq, int* dist, int size, int vertex, int newDist)
+void Dijkstra::decreaseKey(int* priorityQueue, int* distance, int size, int vertex, int newDistance)
 {
     int i;
     for (i = 0; i < size; ++i)
     {
-        if (pq[i] == vertex)
+        if (priorityQueue[i] == vertex)
         {
-            dist[vertex] = newDist; // Zaktualizowanie wartoœci odleg³oœci dla wierzcho³ka
+            distance[vertex] = newDistance; // Zaktualizowanie wartoœci odleg³oœci dla wierzcho³ka
             break;
         }
     }
 
     // Przywracanie w³asnoœci kopca po zmniejszeniu wartoœci klucza
-    while (i != 0 && dist[pq[i]] < dist[pq[(i - 1) / 2]])
+    while (i != 0 && distance[priorityQueue[i]] < distance[priorityQueue[(i - 1) / 2]])
     {
-        swap(pq[i], pq[(i - 1) / 2]); // Zamiana elementu bie¿¹cego z rodzicem
+        swap(priorityQueue[i], priorityQueue[(i - 1) / 2]); // Zamiana elementu bie¿¹cego z rodzicem
         i = (i - 1) / 2; // Przesuniêcie indeksu na rodzica
     }
 }

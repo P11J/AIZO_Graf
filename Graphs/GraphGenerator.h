@@ -3,24 +3,28 @@
 
 #include <string>
 
-class Graph 
+// Definicja klasy Graph do reprezentacji grafu
+class Graph
 {
 public:
-    int vertices;
-    int edges;
+    int vertices; // Liczba wierzcho³ków w grafie
+    int edges; // Liczba krawêdzi w grafie
     int* startVertices; // Tablica przechowuj¹ca pocz¹tki krawêdzi
-    int* endVertices;   // Tablica przechowuj¹ca koñce krawêdzi
-    int* weights;       // Tablica przechowuj¹ca wagi krawêdzi
+    int* endVertices; // Tablica przechowuj¹ca koñce krawêdzi
+    int* weights; // Tablica przechowuj¹ca wagi krawêdzi
 
+    // Konstruktor klasy Graph
     Graph();
+
+    // Destruktor klasy Graph
     ~Graph();
 
-    void generateGraph(int vertices, float density);
-    bool isGraphValid();
+    // Metoda generuj¹ca graf o zadanej liczbie wierzcho³ków i gêstoœci
+    void generateGraph(int vertices2, float density);
 
-
+    // Metoda sprawdzaj¹ca, czy graf jest poprawny
+    bool isGraphValid() const;
 };
 
-#endif GENERATE_H
-
+#endif // GENERATE_H
 
