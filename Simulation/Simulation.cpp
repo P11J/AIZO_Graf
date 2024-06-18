@@ -16,7 +16,7 @@ void Simulation::simulation_mode(int algnum)
     //ZMIENIC DENSITIES DO SPRAWKA
 
 
-    int vertexCounts[] = { 50, 60, 70, 80, 90, 100, 110, 120 }; // Liczby wierzchołków
+    int vertexCounts[] = { 10, 20, 50, 100, 200, 500, 1000}; // Liczby wierzchołków
     float densities[] = { 0.25, 0.50, 0.99 }; // Gęstości grafu
 
     if (algnum == 1) // Algorytm Prima
@@ -26,7 +26,7 @@ void Simulation::simulation_mode(int algnum)
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
-            for (int j = 0; j < 8; j++) // Iteracja po liczbach wierzchołków
+            for (int j = 0; j < 7; j++) // Iteracja po liczbach wierzchołków
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
@@ -75,7 +75,7 @@ void Simulation::simulation_mode(int algnum)
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
-            for (int j = 0; j < 8; j++) // Iteracja po liczbach wierzchołków
+            for (int j = 0; j < 7; j++) // Iteracja po liczbach wierzchołków
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
@@ -124,7 +124,7 @@ void Simulation::simulation_mode(int algnum)
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
-            for (int j = 0; j < 8; j++) // Iteracja po liczbach wierzchołków
+            for (int j = 0; j < 7; j++) // Iteracja po liczbach wierzchołków
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
@@ -172,7 +172,7 @@ void Simulation::simulation_mode(int algnum)
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
-            for (int j = 0; j < 8; j++) // Iteracja po liczbach wierzchołków
+            for (int j = 0; j < 7; j++) // Iteracja po liczbach wierzchołków
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
