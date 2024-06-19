@@ -4,7 +4,7 @@
 class Menu
 {
 public:
-	static void f_menu();
+	static void menu();
 };
 
 #endif //MENU_H

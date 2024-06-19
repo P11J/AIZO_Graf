@@ -7,22 +7,20 @@
 #include <iostream>
 #include <chrono>
 
-#define REPETITION 50 // Definicja liczby powtórzeń dla symulacji
-#define UNIT 1000 // Jednostka przeliczająca czas na milisekundy
+#define ITERATIONS 50 // Definicja liczby powtórzeń dla symulacji
+#define MS 1000 // Jednostka przeliczająca czas na milisekundy
 
-// Definicja metody simulation_mode klasy Simulation
-void Simulation::simulation_mode(int algnum)
+void Simulation::simulationMode(int algNum)
 {
-    //ZMIENIC DENSITIES DO SPRAWKA
 
 
     int vertexCounts[] = { 10, 20, 50, 100, 200, 500, 1000}; // Liczby wierzchołków
     float densities[] = { 0.25, 0.50, 0.99 }; // Gęstości grafu
 
-    if (algnum == 1) // Algorytm Prima
+    if (algNum == 1) // Algorytm Prima
     {
 
-        cout << mode_name(algnum) << endl; // Wyświetlenie nazwy algorytmu
+        cout << modeName(algNum) << endl; // Wyświetlenie nazwy algorytmu
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
@@ -30,48 +28,48 @@ void Simulation::simulation_mode(int algnum)
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
-                int ver = vertexCounts[j]; // Liczba wierzchołków
-                float den = densities[i]; // Gęstość grafu
-                std::chrono::duration<double> czas1{}; // Zmienna do przechowywania czasu wykonania dla listy
+                int vertices = vertexCounts[j]; // Liczba wierzchołków
+                float density = densities[i]; // Gęstość grafu
+                std::chrono::duration<double> time1{}; // Zmienna do przechowywania czasu wykonania dla listy
 
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     ListGraph list; // Utworzenie grafu listowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    list.populateFromGraph(graph); // Wypełnienie grafu listowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    list.loadGraphToGraph(graph); // Wypełnienie grafu listowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    Alg_Prim::Prim_list(list, false); // Wywołanie algorytmu Prima dla listy
+                    Prim::primList(list); // Wywołanie algorytmu Prima dla listy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas1 += elapsed; // Sumowanie czasu wykonania
+                    time1 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla listy wyniosl: " << czas1.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
+                cout << "Czas dla listy wyniosl: " << time1.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
 
-                std::chrono::duration<double> czas2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     MatrixGraph matrix; // Utworzenie grafu macierzowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    matrix.populateFromGraph(graph, 1); // Wypełnienie grafu macierzowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    matrix.loadGraphToGraph(graph, 1); // Wypełnienie grafu macierzowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    Alg_Prim::Prim_matrix(matrix, false); // Wywołanie algorytmu Prima dla macierzy
+                    Prim::primMatrix(matrix); // Wywołanie algorytmu Prima dla macierzy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas2 += elapsed; // Sumowanie czasu wykonania
+                    time2 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla macierzy wyniosl: " << czas2.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
+                cout << "Czas dla macierzy wyniosl: " << time2.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
             }
         }
     }
 
-    if (algnum == 2) // Algorytm Kruskala
+    if (algNum == 2) // Algorytm Kruskala
     {
-        Alg_Kruskal kruskal; // Utworzenie obiektu algorytmu Kruskala
-        cout << mode_name(algnum) << endl; // Wyświetlenie nazwy algorytmu
+        Kruskal kruskal; // Utworzenie obiektu algorytmu Kruskala
+        cout << modeName(algNum) << endl; // Wyświetlenie nazwy algorytmu
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
@@ -79,48 +77,48 @@ void Simulation::simulation_mode(int algnum)
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
-                int ver = vertexCounts[j]; // Liczba wierzchołków
-                float den = densities[i]; // Gęstość grafu
+                int vertices = vertexCounts[j]; // Liczba wierzchołków
+                float density = densities[i]; // Gęstość grafu
 
-                std::chrono::duration<double> czas1{}; // Zmienna do przechowywania czasu wykonania dla listy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time1{}; // Zmienna do przechowywania czasu wykonania dla listy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     ListGraph list; // Utworzenie grafu listowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    list.populateFromGraph(graph); // Wypełnienie grafu listowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    list.loadGraphToGraph(graph); // Wypełnienie grafu listowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    kruskal.Kruskal_list(list, false); // Wywołanie algorytmu Kruskala dla listy
+                    kruskal.kruskalList(list); // Wywołanie algorytmu Kruskala dla listy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas1 += elapsed; // Sumowanie czasu wykonania
+                    time1 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla listy wyniosl: " << czas1.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
+                cout << "Czas dla listy wyniosl: " << time1.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
 
-                std::chrono::duration<double> czas2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     MatrixGraph matrix; // Utworzenie grafu macierzowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    matrix.populateFromGraph(graph, 1); // Wypełnienie grafu macierzowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    matrix.loadGraphToGraph(graph, 1); // Wypełnienie grafu macierzowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    kruskal.Kruskal_matrix(matrix, false); // Wywołanie algorytmu Kruskala dla macierzy
+                    kruskal.kruskalMatrix(matrix); // Wywołanie algorytmu Kruskala dla macierzy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas2 += elapsed; // Sumowanie czasu wykonania
+                    time2 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla macierzy wyniosl: " << czas2.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
+                cout << "Czas dla macierzy wyniosl: " << time2.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
             }
         }
     }
 
-    if (algnum == 3) // Algorytm Dijkstry
+    if (algNum == 3) // Algorytm Dijkstry
     {
         Dijkstra dijkstra; // Utworzenie obiektu algorytmu Dijkstry
-        cout << mode_name(algnum) << endl; // Wyświetlenie nazwy algorytmu
+        cout << modeName(algNum) << endl; // Wyświetlenie nazwy algorytmu
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
@@ -128,47 +126,47 @@ void Simulation::simulation_mode(int algnum)
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
-                int ver = vertexCounts[j]; // Liczba wierzchołków
-                float den = densities[i]; // Gęstość grafu
+                int vertices = vertexCounts[j]; // Liczba wierzchołków
+                float density = densities[i]; // Gęstość grafu
 
-                std::chrono::duration<double> czas1{}; // Zmienna do przechowywania czasu wykonania dla listy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time1{}; // Zmienna do przechowywania czasu wykonania dla listy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     ListGraph list; // Utworzenie grafu listowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    list.populateFromGraph(graph); // Wypełnienie grafu listowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    list.loadGraphToGraph(graph); // Wypełnienie grafu listowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    dijkstra.dijkstraList(list, 0, ver); // Wywołanie algorytmu Dijkstry dla listy
+                    dijkstra.dijkstraList(list, 0, vertices); // Wywołanie algorytmu Dijkstry dla listy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas1 += elapsed; // Sumowanie czasu wykonania
+                    time1 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla listy wyniosl: " << czas1.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
+                cout << "Czas dla listy wyniosl: " << time1.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
 
-                std::chrono::duration<double> czas2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     MatrixGraph matrix; // Utworzenie grafu macierzowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    matrix.populateFromGraph(graph, -1); // Wypełnienie grafu macierzowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    matrix.loadGraphToGraph(graph, -1); // Wypełnienie grafu macierzowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    dijkstra.dijkstraMatrix(matrix, 0, ver); // Wywołanie algorytmu Dijkstry dla macierzy
+                    dijkstra.dijkstraMatrix(matrix, 0, vertices); // Wywołanie algorytmu Dijkstry dla macierzy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas2 += elapsed; // Sumowanie czasu wykonania
+                    time2 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla macierzy wyniosl: " << czas2.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
+                cout << "Czas dla macierzy wyniosl: " << time2.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
             }
         }
     }
 
-    if (algnum == 4) // Algorytm Forda-Bellmana
+    if (algNum == 4) // Algorytm Forda-Bellmana
     {
-        cout << mode_name(algnum) << endl; // Wyświetlenie nazwy algorytmu
+        cout << modeName(algNum) << endl; // Wyświetlenie nazwy algorytmu
         for (int i = 0; i < 3; i++) // Iteracja po gęstościach
         {
             cout << "----- gestosc " << densities[i] << endl; // Wyświetlenie gęstości
@@ -176,40 +174,40 @@ void Simulation::simulation_mode(int algnum)
             {
                 cout << "--- rozmiar " << vertexCounts[j] << endl; // Wyświetlenie liczby wierzchołków
 
-                int ver = vertexCounts[j]; // Liczba wierzchołków
-                float den = densities[i]; // Gęstość grafu
+                int vertices = vertexCounts[j]; // Liczba wierzchołków
+                float density = densities[i]; // Gęstość grafu
 
-                std::chrono::duration<double> czas1{}; // Zmienna do przechowywania czasu wykonania dla listy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time1{}; // Zmienna do przechowywania czasu wykonania dla listy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     ListGraph list; // Utworzenie grafu listowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    list.populateFromGraph(graph); // Wypełnienie grafu listowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    list.loadGraphToGraph(graph); // Wypełnienie grafu listowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    FordBellman::fordBellmanList(list, 0, ver); // Wywołanie algorytmu Forda-Bellmana dla listy
+                    FordBellman::fordBellmanList(list, 0, vertices); // Wywołanie algorytmu Forda-Bellmana dla listy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas1 += elapsed; // Sumowanie czasu wykonania
+                    time1 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla listy wyniosl: " << czas1.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
+                cout << "Czas dla listy wyniosl: " << time1.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla listy
 
-                std::chrono::duration<double> czas2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
-                for (int n = 0; n < REPETITION; n++) // Powtórzenia dla uzyskania średniego czasu
+                std::chrono::duration<double> time2{}; // Zmienna do przechowywania czasu wykonania dla macierzy
+                for (int n = 0; n < ITERATIONS; n++) // Powtórzenia dla uzyskania średniego czasu
                 {
                     MatrixGraph matrix; // Utworzenie grafu macierzowego
                     Graph graph; // Utworzenie obiektu grafu
-                    graph.generateGraph(ver, den); // Generowanie grafu
-                    matrix.populateFromGraph(graph, -1); // Wypełnienie grafu macierzowego
+                    graph.generateGraph(vertices, density); // Generowanie grafu
+                    matrix.loadGraphToGraph(graph, -1); // Wypełnienie grafu macierzowego
 
                     auto begin = chrono::high_resolution_clock::now(); // Rozpoczęcie pomiaru czasu
-                    FordBellman::fordBellmanMatrix(matrix, 0, ver); // Wywołanie algorytmu Forda-Bellmana dla macierzy
+                    FordBellman::fordBellmanMatrix(matrix, 0, vertices); // Wywołanie algorytmu Forda-Bellmana dla macierzy
                     auto end = chrono::high_resolution_clock::now(); // Zakończenie pomiaru czasu
                     auto elapsed = chrono::duration_cast<chrono::microseconds>(end - begin); // Obliczenie czasu wykonania
-                    czas2 += elapsed; // Sumowanie czasu wykonania
+                    time2 += elapsed; // Sumowanie czasu wykonania
                 }
-                cout << "Czas dla macierzy wyniosl: " << czas2.count() * UNIT / REPETITION << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
+                cout << "Czas dla macierzy wyniosl: " << time2.count() * MS / ITERATIONS << " ms" << endl; // Wyświetlenie średniego czasu wykonania dla macierzy
             }
         }
     }
@@ -217,8 +215,8 @@ void Simulation::simulation_mode(int algnum)
     cout << endl << endl << endl; // Oddzielenie wyników pustymi liniami
 }
 
-// Definicja metody mode_name klasy Simulation
-const char* Simulation::mode_name(int algnum)
+// Definicja metody modeName klasy Simulation
+const char* Simulation::modeName(int algnum)
 {
     switch (algnum)
     {

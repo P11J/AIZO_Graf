@@ -3,6 +3,8 @@
 #include <iostream>
 #include <algorithm>
 
+
+
 // Implementacja dla grafu reprezentowanego list¹
 
 void Dijkstra::dijkstraList(ListGraph& graph, int startVertex, int endVertex)
@@ -58,10 +60,7 @@ void Dijkstra::dijkstraList(ListGraph& graph, int startVertex, int endVertex)
     }
 
     //Wypisanie wyniku
-
-    cout << "Format:\nWierzcholek: odleglosc od wierzcholka zrodlowego" << endl;
-    for (int i = 0; i < vertices; i++)
-        cout << i << ": " << distance[i] << endl; // Wypisanie odleg³oœci dla ka¿dego wierzcho³ka
+    displayList(vertices, distance);
 
     // Zwolnienie zaalokowanej pamiêci
     delete[] distance;
@@ -69,6 +68,11 @@ void Dijkstra::dijkstraList(ListGraph& graph, int startVertex, int endVertex)
     delete[] priorityQueue;
 }
 
+void Dijkstra::displayList(int vertices, int* distance){
+    cout << "Format:\nWierzcholek: odleglosc od wierzcholka zrodlowego" << endl;
+    for (int i = 0; i < vertices; i++)
+        cout << i << ": " << distance[i] << endl; // Wypisanie odleg³oœci dla ka¿dego wierzcho³ka
+}
 
 void Dijkstra::dijkstraMatrix(MatrixGraph& graph, int startVertex, int endVertex) {
     int vertices = graph.vertices; // Liczba wierzcho³ków w grafie
@@ -118,6 +122,15 @@ void Dijkstra::dijkstraMatrix(MatrixGraph& graph, int startVertex, int endVertex
 
     // Wypisanie wyników
 
+    displayMatrix(distance, startVertex, endVertex, predecessors);
+
+    // Zwolnienie zaalokowanej pamiêci
+    delete[] priorityQueue;
+    delete[] distance;
+    delete[] predecessors;
+}
+
+void Dijkstra::displayMatrix(int* distance, int startVertex, int endVertex, int* predecessors){
     cout << "Koszt najkrotszej sciezki z wierzcholka " << startVertex << " do wierzcholka " << endVertex << " wynosi: " << distance[endVertex] << endl;
     cout << "Znaleziona sciezka: ";
     int currentVertex = endVertex;
@@ -130,13 +143,7 @@ void Dijkstra::dijkstraMatrix(MatrixGraph& graph, int startVertex, int endVertex
     }
     cout << endl;
 
-
-    // Zwolnienie zaalokowanej pamiêci
-    delete[] priorityQueue;
-    delete[] distance;
-    delete[] predecessors;
 }
-
 
 // Metoda zamieniaj¹ca dwie pary (odleg³oœæ, wierzcho³ek)
 void Dijkstra::swap(MyPair<int, int>& a, MyPair<int, int>& b)

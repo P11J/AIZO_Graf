@@ -49,7 +49,14 @@ void FordBellman::fordBellmanList(ListGraph& graph, int startVertex, int endVert
     }
 
     // Wyœwietlenie wyników
+    displayList(startVertex, endVertex, distance, predecessors);
 
+    // Zwolnienie zaalokowanej pamiêci dla tablicy odleg³oœci i tablicy poprzedników
+    delete[] distance;
+    delete[] predecessors;
+}
+
+void FordBellman::displayList(int startVertex, int endVertex, int* distance, int* predecessors){
     cout << "Koszt najkrotszej sciezki z wierzcholka " << startVertex << " do wierzcholka " << endVertex << " wynosi: " << distance[endVertex] << std::endl;
     cout << "Znaleziona sciezka: ";
     int currentVertex = endVertex;
@@ -61,10 +68,6 @@ void FordBellman::fordBellmanList(ListGraph& graph, int startVertex, int endVert
             cout << " -> ";
     }
     cout << endl;
-
-    // Zwolnienie zaalokowanej pamiêci dla tablicy odleg³oœci i tablicy poprzedników
-    delete[] distance;
-    delete[] predecessors;
 }
 
 // Implementacja dla grafu reprezentowanego macierz¹
@@ -118,22 +121,26 @@ void FordBellman::fordBellmanMatrix(MatrixGraph& graph, int startVertex, int end
             break; // Jeœli odleg³oœci nie zosta³y zmienione, zakoñcz iteracjê
     }
 
-    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
+    // Wyœwietlenie wyników
 
-    std::cout << "Koszt najkrotszej sciezki z wierzcholka " << startVertex << " do wierzcholka " << endVertex << " wynosi: " << distance[endVertex] << std::endl;
-    std::cout << "Znaleziona sciezka: ";
-    int currentVertex = endVertex;
-    while (currentVertex != -1)
-    {
-        std::cout << currentVertex; // Wyœwietlenie bie¿¹cego wierzcho³ka
-        currentVertex = predecessors[currentVertex]; // Przejœcie do poprzednika
-        if (currentVertex != -1)
-            std::cout << " -> "; // Separator strza³kowy
-    }
-    std::cout << std::endl;
+    displayMatrix(startVertex, endVertex, distance, predecessors);
 
 
     // Zwolnienie zaalokowanej pamiêci dla tablicy odleg³oœci i tablicy poprzedników
     delete[] distance;
     delete[] predecessors;
+}
+
+void FordBellman::displayMatrix(int startVertex, int endVertex, int* distance, int* predecessors){
+    cout << "Koszt najkrotszej sciezki z wierzcholka " << startVertex << " do wierzcholka " << endVertex << " wynosi: " << distance[endVertex] << std::endl;
+    cout << "Znaleziona sciezka: ";
+    int currentVertex = endVertex;
+    while (currentVertex != -1)
+    {
+        cout << currentVertex; // Wyœwietlenie bie¿¹cego wierzcho³ka
+        currentVertex = predecessors[currentVertex]; // Przejœcie do poprzednika
+        if (currentVertex != -1)
+            cout << " -> "; // Separator strza³kowy
+    }
+    cout << endl;
 }

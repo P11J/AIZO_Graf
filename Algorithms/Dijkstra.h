@@ -26,6 +26,9 @@ private:
     void heapify(MyPair<int, int>* priorityQueue, int* distance, int n, int i); // Metoda przywracaj¹ca w³asnoœæ kopca dla par
     MyPair<int, int> extractMin(MyPair<int, int>* priorityQueue, int* distance, int& size); // Metoda usuwaj¹ca i zwracaj¹ca element minimalny z kopca dla par
     static void decreaseKey(MyPair<int, int>* priorityQueue, int* distance, int size, int vertex, int newDistance); // Metoda zmniejszaj¹ca wartoœæ klucza w kopcu dla par
+
+    static void displayList(int vertices, int* distance);
+    static void displayMatrix(int* distance, int startVertex, int endVertex, int* predecessors);
 };
 
 #endif // ALG_DIJKSTRA

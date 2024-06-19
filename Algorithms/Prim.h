@@ -4,19 +4,23 @@
 #include "Graphs/MatrixGraph.h"
 #include "Graphs/ListGraph.h"
 
-// Definicja klasy Alg_Prim zawieraj¹cej metody dla algorytmu Prima
-class Alg_Prim
+// Definicja klasy Prim zawieraj¹cej metody dla algorytmu Prima
+class Prim
 {
 public:
     // Metoda implementuj¹ca algorytm Prima dla grafu macierzowego
-    static void Prim_matrix(MatrixGraph& graph, bool write);
+    static void primMatrix(MatrixGraph& graph);
 
     // Metoda implementuj¹ca algorytm Prima dla grafu listowego
-    static void Prim_list(ListGraph& graph, bool write);
+    static void primList(ListGraph& graph);
 
 private:
     // Metoda pomocnicza do znajdowania wierzcho³ka o minimalnym kluczu, który nie jest w MST
     static int minKey(const int key[], const bool inMST[], int vertices);
+
+    static void displayList(int vertices, int* predecessor, int* key);
+
+    static void displayMatrix(int vertices, int* predecessor, int* key);
 };
 
 #endif // ALG_PRIM

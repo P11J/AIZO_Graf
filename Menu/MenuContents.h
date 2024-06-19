@@ -4,7 +4,7 @@
 class MenuContents
 {
 public:
-	static void f_menu_settings(int mode);
+	static void menuSettings(int mode);
 };
 
 #endif //MENU_SETTINGS_H

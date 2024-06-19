@@ -14,17 +14,16 @@
 
 using namespace std;
 
-// Definicja metody f_menu_settings klasy MenuContents
-void MenuContents::f_menu_settings(int mode)
+
+void MenuContents::menuSettings(int mode)
 {
     ListGraph list; // Obiekt grafu reprezentowanego list¹
     MatrixGraph matrix; // Obiekt grafu reprezentowanego macierz¹
 
-    int wybor_funkcji = 0; // Zmienna przechowuj¹ca wybór u¿ytkownika
+    int choice = 0; // Zmienna przechowuj¹ca wybór u¿ytkownika
     bool y = true; // Flaga kontroluj¹ca dzia³anie pêtli menu
     while (y)
     {
-        //system("cls"); // Wyczyszczenie ekranu (zakomentowane)
         cout << endl;
         cout << "Wybierz funkcje programu: " << endl;
         cout << "1. Odczyt grafu z pliku" << endl;
@@ -45,25 +44,25 @@ void MenuContents::f_menu_settings(int mode)
         cout << "8. Zmien problem" << endl;
         cout << "9. Wylaczenie programu" << endl;
         cout << endl;
-        cin >> wybor_funkcji; // Odczytanie wyboru u¿ytkownika
+        cin >> choice;
 
-        // Obs³uga wyboru u¿ytkownika
-        switch (wybor_funkcji)
+
+        switch (choice)
         {
             case 1:
             {
                 string filename;
                 cout << "Podaj nazwe pliku: ";
-                cin >> filename; // Odczytanie nazwy pliku
+                cin >> filename;
                 if (mode == 1)
                 {
-                    matrix.load_graph(filename, 1); // Wczytanie grafu macierzowego
-                    list.load_graph(filename, 1); // Wczytanie grafu listowego
+                    matrix.loadGraph(filename, 1); // Wczytanie grafu macierzowego
+                    list.loadGraph(filename, 1); // Wczytanie grafu listowego
                 }
                 else if (mode == 2)
                 {
-                    matrix.load_graph(filename, -1); // Wczytanie grafu macierzowego
-                    list.load_graph(filename, 2); // Wczytanie grafu listowego
+                    matrix.loadGraph(filename, -1); // Wczytanie grafu macierzowego
+                    list.loadGraph(filename, 2); // Wczytanie grafu listowego
                 }
                 break;
             }
@@ -72,13 +71,13 @@ void MenuContents::f_menu_settings(int mode)
             {
                 if (mode == 1)
                 {
-                    matrix.save_graph_mst(); // Zapis grafu macierzowego
-                    list.save_graph(); // Zapis grafu listowego
+                    matrix.saveGraphMST(); // Zapis grafu macierzowego
+                    list.saveGraph(); // Zapis grafu listowego
                 }
                 else if (mode == 2)
                 {
-                    matrix.save_graph_naj(); // Zapis grafu macierzowego
-                    list.save_graph(); // Zapis grafu listowego
+                    matrix.saveGraphSTP(); // Zapis grafu macierzowego
+                    list.saveGraph(); // Zapis grafu listowego
                 }
                 break;
             }
@@ -88,66 +87,66 @@ void MenuContents::f_menu_settings(int mode)
                 int vertices;
                 float density;
                 cout << "Podaj liczbe wierzcholkow: ";
-                cin >> vertices; // Odczytanie liczby wierzcho³ków
-                cout << "Podaj gestosc grafu: 1. 25%" << endl;
-                cout << "                     2. 50%" << endl;
-                cout << "                     3. 99%" << endl;
-                cout << endl;
-                cin >> density; // Odczytanie gêstoœci grafu
+                cin >> vertices;
+                cout << "Podaj gestosc grafu:" << endl;
+                cout << "1. 25%" << endl;
+                cout << "2. 50%" << endl;
+                cout << "3. 99%" << endl;
+                cin >> density;
                 if (density == 1)
                 {
                     Graph graph;
                     graph.generateGraph(vertices, 0.25); // Generowanie grafu o gêstoœci 25%
-                    list.populateFromGraph(graph); // Wype³nienie grafu listowego
+                    list.loadGraphToGraph(graph); // Wype³nienie grafu listowego
                     if (mode == 1)
                     {
-                        matrix.populateFromGraph(graph, 1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, 1); // Wype³nienie grafu macierzowego
                     }
                     else if (mode == 2)
                     {
-                        matrix.populateFromGraph(graph, -1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, -1); // Wype³nienie grafu macierzowego
                     }
                 }
                 else if (density == 2)
                 {
                     Graph graph;
                     graph.generateGraph(vertices, 0.5); // Generowanie grafu o gêstoœci 50%
-                    list.populateFromGraph(graph); // Wype³nienie grafu listowego
+                    list.loadGraphToGraph(graph); // Wype³nienie grafu listowego
                     if (mode == 1)
                     {
-                        matrix.populateFromGraph(graph, 1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, 1); // Wype³nienie grafu macierzowego
                     }
                     else if (mode == 2)
                     {
-                        matrix.populateFromGraph(graph, -1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, -1); // Wype³nienie grafu macierzowego
                     }
                 }
                 else if (density == 3)
                 {
                     Graph graph;
                     graph.generateGraph(vertices, 0.99); // Generowanie grafu o gêstoœci 99%
-                    list.populateFromGraph(graph); // Wype³nienie grafu listowego
+                    list.loadGraphToGraph(graph); // Wype³nienie grafu listowego
                     if (mode == 1)
                     {
-                        matrix.populateFromGraph(graph, 1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, 1); // Wype³nienie grafu macierzowego
                     }
                     else if (mode == 2)
                     {
-                        matrix.populateFromGraph(graph, -1); // Wype³nienie grafu macierzowego
+                        matrix.loadGraphToGraph(graph, -1); // Wype³nienie grafu macierzowego
                     }
                 }
                 else
                 {
-                    cout << "Bledna gestosc" << endl; // Komunikat o b³êdnej gêstoœci
+                    cout << "Bledna gestosc" << endl;
                 }
                 break;
             }
 
             case 4:
             {
-                matrix.display_graph(); // Wyœwietlenie grafu macierzowego
+                matrix.displayGraph(); // Wyœwietlenie grafu macierzowego
                 matrix.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
-                list.display_graph(); // Wyœwietlenie grafu listowego
+                list.displayGraph(); // Wyœwietlenie grafu listowego
                 list.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
                 break;
             }
@@ -165,7 +164,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        Alg_Prim::Prim_matrix(matrix, true); // Wywo³anie algorytmu Prima dla macierzy
+                        Prim::primMatrix(matrix); // Wywo³anie algorytmu Prima dla macierzy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla macierzy: " << elapsed.count() << " ms" << endl << endl;
@@ -178,7 +177,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        Alg_Prim::Prim_list(list, true); // Wywo³anie algorytmu Prima dla listy
+                        Prim::primList(list); // Wywo³anie algorytmu Prima dla listy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla listy: " << elapsed.count() << " ms" << endl << endl;
@@ -190,11 +189,11 @@ void MenuContents::f_menu_settings(int mode)
                     matrix.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
                     list.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
 
-                    int startV, endV;
+                    int startVertex, endVertex;
                     cout << "Podaj wierzcholek poczatkowy: ";
-                    cin >> startV; // Odczytanie wierzcho³ka pocz¹tkowego
+                    cin >> startVertex; // Odczytanie wierzcho³ka pocz¹tkowego
                     cout << "Podaj wierzcholek koncowy: ";
-                    cin >> endV; // Odczytanie wierzcho³ka koñcowego
+                    cin >> endVertex; // Odczytanie wierzcho³ka koñcowego
                     cout << endl;
 
                     if (matrix.vertices <= 0 || matrix.incidenceMatrix == nullptr || matrix.weightsMatrix == nullptr)
@@ -205,7 +204,7 @@ void MenuContents::f_menu_settings(int mode)
                     {
                         cout << "Macierz incydencji" << endl;
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        dijkstra.dijkstraMatrix(matrix, startV, endV); // Wywo³anie algorytmu Dijkstry dla macierzy
+                        dijkstra.dijkstraMatrix(matrix, startVertex, endVertex); // Wywo³anie algorytmu Dijkstry dla macierzy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla macierzy: " << elapsed.count() << " ms" << endl << endl;
@@ -219,7 +218,7 @@ void MenuContents::f_menu_settings(int mode)
                     {
                         cout << "Lista sasiedztwa" << endl;
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        dijkstra.dijkstraList(list, startV, endV); // Wywo³anie algorytmu Dijkstry dla listy
+                        dijkstra.dijkstraList(list, startVertex, endVertex); // Wywo³anie algorytmu Dijkstry dla listy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla listy: " << elapsed.count() << " ms" << endl << endl;
@@ -232,7 +231,7 @@ void MenuContents::f_menu_settings(int mode)
             {
                 if (mode == 1)
                 {
-                    Alg_Kruskal kruskal; // Utworzenie obiektu algorytmu Kruskala
+                    Kruskal kruskal; // Utworzenie obiektu algorytmu Kruskala
                     matrix.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
                     list.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
 
@@ -243,7 +242,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        kruskal.Kruskal_matrix(matrix, true); // Wywo³anie algorytmu Kruskala dla macierzy
+                        kruskal.kruskalMatrix(matrix); // Wywo³anie algorytmu Kruskala dla macierzy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla macierzy: " << elapsed.count() << " ms" << endl << endl;
@@ -256,7 +255,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        kruskal.Kruskal_list(list, true); // Wywo³anie algorytmu Kruskala dla listy
+                        kruskal.kruskalList(list); // Wywo³anie algorytmu Kruskala dla listy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla listy: " << elapsed.count() << " ms" << endl << endl;
@@ -267,11 +266,11 @@ void MenuContents::f_menu_settings(int mode)
                     matrix.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
                     list.shouldDeleteData = false; // Ustawienie flagi, aby nie usuwaæ danych
 
-                    int startV, endV;
+                    int startVertex, endVertex;
                     cout << "Podaj wierzcholek poczatkowy: ";
-                    cin >> startV; // Odczytanie wierzcho³ka pocz¹tkowego
+                    cin >> startVertex; // Odczytanie wierzcho³ka pocz¹tkowego
                     cout << "Podaj wierzcholek koncowy: ";
-                    cin >> endV; // Odczytanie wierzcho³ka koñcowego
+                    cin >> endVertex; // Odczytanie wierzcho³ka koñcowego
                     cout << endl;
 
                     if (matrix.vertices <= 0 || matrix.incidenceMatrix == nullptr || matrix.weightsMatrix == nullptr)
@@ -281,7 +280,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        FordBellman::fordBellmanMatrix(matrix, startV, endV); // Wywo³anie algorytmu Forda-Bellmana dla macierzy
+                        FordBellman::fordBellmanMatrix(matrix, startVertex, endVertex); // Wywo³anie algorytmu Forda-Bellmana dla macierzy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla macierzy: " << elapsed.count() << " ms" << endl << endl;
@@ -294,7 +293,7 @@ void MenuContents::f_menu_settings(int mode)
                     else
                     {
                         auto begin = chrono::high_resolution_clock::now(); // Rozpoczêcie pomiaru czasu
-                        FordBellman::fordBellmanList(list, startV, endV); // Wywo³anie algorytmu Forda-Bellmana dla listy
+                        FordBellman::fordBellmanList(list, startVertex, endVertex); // Wywo³anie algorytmu Forda-Bellmana dla listy
                         auto end = chrono::high_resolution_clock::now(); // Zakoñczenie pomiaru czasu
                         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - begin); // Obliczenie czasu wykonania
                         cout << "Czas wykonania dla listy: " << elapsed.count() << " ms" << endl << endl;
@@ -305,23 +304,22 @@ void MenuContents::f_menu_settings(int mode)
 
             case 7:
             {
-                Simulation simulation; // Utworzenie obiektu symulacji
-                simulation.simulation_mode(1); // Wywo³anie trybu symulacji 1
-                simulation.simulation_mode(2); // Wywo³anie trybu symulacji 2
-                simulation.simulation_mode(3); // Wywo³anie trybu symulacji 3
-                simulation.simulation_mode(4); // Wywo³anie trybu symulacji 4
+                Simulation::simulationMode(1); // Wywo³anie trybu symulacji 1
+                Simulation::simulationMode(2); // Wywo³anie trybu symulacji 2
+                Simulation::simulationMode(3); // Wywo³anie trybu symulacji 3
+                Simulation::simulationMode(4); // Wywo³anie trybu symulacji 4
                 break;
             }
 
             case 8:
             {
-                y = false; // Wyjœcie z pêtli menu
+                y = false;
                 break;
             }
 
             case 9:
             {
-                y = false; // Wyjœcie z pêtli menu
+                y = false;
                 cout << "Zakonczono dzialanie programu" << endl;
                 exit(0); // Zakoñczenie dzia³ania programu
                 break;

@@ -23,19 +23,19 @@ public:
     ~MatrixGraph();
 
     // Metoda wczytuj¹ca graf z pliku
-    void load_graph(string& filename, int type);
+    void loadGraph(string& filename, int type);
 
     // Metoda zapisuj¹ca graf do pliku (naj)
-    void save_graph_naj() const;
+    void saveGraphSTP() const;
 
     // Metoda zapisuj¹ca graf do pliku (mst)
-    void save_graph_mst() const;
+    void saveGraphMST() const;
 
     // Metoda wyœwietlaj¹ca graf
-    void display_graph() const;
+    void displayGraph() const;
 
     // Metoda wype³niaj¹ca graf na podstawie obiektu Graph
-    void populateFromGraph(Graph& graph, int type);
+    void loadGraphToGraph(Graph& graph, int type);
 
     // Metoda sprawdzaj¹ca, czy graf jest poprawny
     bool isGraphValid() const;

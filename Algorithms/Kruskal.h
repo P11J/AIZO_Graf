@@ -5,36 +5,40 @@
 #include "Graphs/ListGraph.h"
 
 // Struktura reprezentuj¹ca krawêdŸ w grafie
-struct Krawedz
+struct Edge
 {
-    int pocz; // Wierzcho³ek pocz¹tkowy
-    int kon; // Wierzcho³ek koñcowy
-    int waga; // Waga krawêdzi
+    int startVertex; // Wierzcho³ek pocz¹tkowy
+    int endVertex; // Wierzcho³ek koñcowy
+    int weight; // Waga krawêdzi
 };
 
 // Struktura reprezentuj¹ca podzbiór dla algorytmu Union-Find
-struct Podzbior
+struct Subset
 {
-    int poprzednik; // Rodzic w zbiorze
+    int predecessor; // Rodzic w zbiorze
     int rank; // Ranga w zbiorze
 };
 
-// Definicja klasy Alg_Kruskal zawieraj¹cej metody dla algorytmu Kruskala
-class Alg_Kruskal
+// Definicja klasy Kruskal zawieraj¹cej metody dla algorytmu Kruskala
+class Kruskal
 {
 public:
     // Metoda implementuj¹ca algorytm Kruskala dla grafu macierzowego
-    void Kruskal_matrix(MatrixGraph& graph, bool write);
+    void kruskalMatrix(MatrixGraph& graph);
 
     // Metoda implementuj¹ca algorytm Kruskala dla grafu listowego
-    void Kruskal_list(ListGraph& graph, bool write);
+    void kruskalList(ListGraph& graph);
 
 private:
     // Funkcja pomocnicza do znajdowania zbioru elementu i
-    int znajdz(Podzbior podzbiory[], int i);
+    int findSet(Subset subsets[], int i);
 
     // Funkcja pomocnicza do ³¹czenia dwóch zbiorów x i y
-    void zlacz(Podzbior subsets[], int x, int y);
+    void join(Subset subsets[], int x, int y);
+
+    static void displayList(Edge* result, int e);
+
+    static void displayMatrix(Edge* result, int e);
 };
 
 #endif // ALG_KRUSKAL

@@ -13,6 +13,10 @@ public:
 
     // Metoda implementuj¹ca algorytm Forda-Bellmana dla grafu listowego
     static void fordBellmanList(ListGraph& graph, int startVertex, int endVertex);
+
+    static void displayList(int startVertex, int endVertex, int* distance, int* predecessors);
+
+    static void displayMatrix(int startVertex, int endVertex, int* distance, int* predecessors);
 };
 #endif //ALG_FORD_BELLMAN
 

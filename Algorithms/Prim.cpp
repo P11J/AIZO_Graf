@@ -3,8 +3,8 @@
 #include <iostream> // Do³¹czenie biblioteki wejœcia-wyjœcia
 #include <iomanip> // Do³¹czenie biblioteki dla manipulacji strumieniami wejœcia-wyjœcia
 
-// Implementacja metody Prim_list dla grafu reprezentowanego list¹
-void Alg_Prim::Prim_list(ListGraph& graph, bool write)
+// Implementacja metody primList dla grafu reprezentowanego list¹
+void Prim::primList(ListGraph& graph)
 {
     int vertices = graph.vertices; // Liczba wierzcho³ków w grafie
 
@@ -60,18 +60,10 @@ void Alg_Prim::Prim_list(ListGraph& graph, bool write)
         }
     }
 
-    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
-    if (write)
-    {
-        cout << "Edge Waga" << endl;
-        for (int i = 1; i < vertices; ++i)
-        {
-            if (predecessor[i] != -1)
-            {
-                cout << setw(3) << predecessor[i] << ":" << i << setw(5) << key[i] << endl; // Wyœwietlenie krawêdzi i jej wagi
-            }
-        }
-    }
+    // Wyœwietlenie wyników
+
+    displayList(vertices, predecessor, key);
+
 
     // Zwolnienie zaalokowanej pamiêci dla tablicy list s¹siedztwa
     for (int i = 0; i < vertices; ++i)
@@ -84,8 +76,19 @@ void Alg_Prim::Prim_list(ListGraph& graph, bool write)
     delete[] inMST;
 }
 
-// Implementacja metody Prim_matrix dla grafu reprezentowanego macierz¹
-void Alg_Prim::Prim_matrix(MatrixGraph& graph, bool write)
+void Prim::displayList(int vertices, int* predecessor, int* key){
+    cout << "Krawedz: Waga" << endl;
+    for (int i = 1; i < vertices; ++i)
+    {
+        if (predecessor[i] != -1)
+        {
+            cout << setw(3) << predecessor[i] << ":" << i << setw(5) << key[i] << endl; // Wyœwietlenie krawêdzi i jej wagi
+        }
+    }
+}
+
+// Implementacja dla grafu reprezentowanego macierz¹
+void Prim::primMatrix(MatrixGraph& graph)
 {
     int vertices = graph.vertices; // Liczba wierzcho³ków w grafie
     int edges = graph.edges; // Liczba krawêdzi w grafie
@@ -139,18 +142,8 @@ void Alg_Prim::Prim_matrix(MatrixGraph& graph, bool write)
         }
     }
 
-    // Wyœwietlenie wyników, jeœli flaga write jest ustawiona na true
-    if (write)
-    {
-        cout << "Edge Waga" << endl;
-        for (int i = 1; i < vertices; ++i)
-        {
-            if (predecessor[i] != -1)
-            {
-                cout << setw(3) << predecessor[i] << ":" << i << setw(5) << key[i] << endl; // Wyœwietlenie krawêdzi i jej wagi
-            }
-        }
-    }
+    // Wyœwietlenie wyników
+    displayMatrix(vertices, predecessor, key);
 
     // Zwolnienie zaalokowanej pamiêci
     delete[] predecessor;
@@ -158,11 +151,22 @@ void Alg_Prim::Prim_matrix(MatrixGraph& graph, bool write)
     delete[] inMST;
 }
 
+void Prim::displayMatrix(int vertices, int* predecessor, int* key){
+    cout << "Krawedz: Waga" << endl;
+    for (int i = 1; i < vertices; ++i)
+    {
+        if (predecessor[i] != -1)
+        {
+            cout << setw(3) << predecessor[i] << ":" << i << setw(5) << key[i] << endl; // Wyœwietlenie krawêdzi i jej wagi
+        }
+    }
+}
+
 // Implementacja metody minKey do znajdowania wierzcho³ka o minimalnym kluczu
-int Alg_Prim::minKey(const int key[], const bool inMST[], int vertices)
+int Prim::minKey(const int key[], const bool inMST[], int vertices)
 {
     int min = INT_MAX; // Inicjalizacja minimalnej wartoœci jako nieskoñczonoœæ
-    int min_index = -1; // Inicjalizacja indeksu minimalnej wartoœci jako -1
+    int minIndex = -1; // Inicjalizacja indeksu minimalnej wartoœci jako -1
 
     // Przegl¹d wszystkich wierzcho³ków
     for (int v = 0; v < vertices; ++v)
@@ -171,9 +175,9 @@ int Alg_Prim::minKey(const int key[], const bool inMST[], int vertices)
         if (!inMST[v] && key[v] < min)
         {
             min = key[v]; // Aktualizacja minimalnej wartoœci
-            min_index = v; // Aktualizacja indeksu minimalnej wartoœci
+            minIndex = v; // Aktualizacja indeksu minimalnej wartoœci
         }
     }
 
-    return min_index; // Zwrócenie indeksu wierzcho³ka o minimalnym kluczu
+    return minIndex; // Zwrócenie indeksu wierzcho³ka o minimalnym kluczu
 }

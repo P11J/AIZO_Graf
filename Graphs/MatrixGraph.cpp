@@ -47,7 +47,7 @@ MatrixGraph::~MatrixGraph()
 }
 
 // Metoda wczytuj¹ca graf z pliku
-void MatrixGraph::load_graph(string& filename, int type)
+void MatrixGraph::loadGraph(string& filename, int type)
 {
     ifstream file; // Strumieñ plikowy do odczytu
     file.open(filename); // Otwarcie pliku
@@ -81,7 +81,7 @@ void MatrixGraph::load_graph(string& filename, int type)
 }
 
 // Metoda wyœwietlaj¹ca graf
-void MatrixGraph::display_graph() const
+void MatrixGraph::displayGraph() const
 {
     if (!isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
@@ -89,7 +89,7 @@ void MatrixGraph::display_graph() const
         return;
     }
 
-    cout << "Macierz incydencji:" << endl;
+    cout << "\nMacierz incydencji:" << endl;
     for (int i = 0; i < vertices; i++)
     {
         for (int j = 0; j < edges; j++)
@@ -112,15 +112,14 @@ bool MatrixGraph::isGraphValid() const
     return incidenceMatrix != nullptr && weightsMatrix != nullptr; // Graf jest poprawny, jeœli macierz incydencji i tablica wag nie s¹ puste
 }
 
-// Metoda zapisuj¹ca graf do pliku (naj)
-void MatrixGraph::save_graph_naj() const
+// Metoda zapisuj¹ca graf do pliku dla STP
+void MatrixGraph::saveGraphSTP() const
 {
     if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania macierzy incydencji: " << endl;
         cin >> filename;
-        filename += ".txt";
         ofstream file;
 
         file.open(filename); // Otwarcie pliku do zapisu
@@ -163,15 +162,14 @@ void MatrixGraph::save_graph_naj() const
     }
 }
 
-// Metoda zapisuj¹ca graf do pliku (mst)
-void MatrixGraph::save_graph_mst() const
+// Metoda zapisuj¹ca graf do pliku dla MST
+void MatrixGraph::saveGraphMST() const
 {
     if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania macierzy incydencji: " << endl;
         cin >> filename;
-        filename += ".txt";
         ofstream file;
 
         file.open(filename); // Otwarcie pliku do zapisu
@@ -202,7 +200,7 @@ void MatrixGraph::save_graph_mst() const
 }
 
 // Metoda wype³niaj¹ca graf na podstawie obiektu Graph
-void MatrixGraph::populateFromGraph(Graph& graph, int type)
+void MatrixGraph::loadGraphToGraph(Graph& graph, int type)
 {
     // Czyszczenie poprzednich macierzy, jeœli istniej¹
     if (incidenceMatrix)

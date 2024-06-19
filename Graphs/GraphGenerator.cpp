@@ -32,9 +32,9 @@ bool Graph::isGraphValid() const
 // Metoda generuj¹ca graf o zadanej liczbie wierzcho³ków i gêstoœci
 void Graph::generateGraph(int vertices2, float density)
 {
-    std::random_device rd; // Urz¹dzenie losuj¹ce
-    std::mt19937 gen(rd()); // Generator liczb losowych
-    std::uniform_real_distribution<float> distribution((float)1, (float)vertices2); // Rozk³ad jednostajny dla wag krawêdzi
+    random_device rd; // Urz¹dzenie losuj¹ce
+    mt19937 gen(rd()); // Generator liczb losowych
+    uniform_real_distribution<float> distribution((float)1, (float)vertices2); // Rozk³ad jednostajny dla wag krawêdzi
 
     this->vertices = vertices2; // Ustawienie liczby wierzcho³ków
     edges = static_cast<int>(density * vertices2 * (vertices2 - 1) / 2); // Obliczenie liczby krawêdzi na podstawie gêstoœci
@@ -93,7 +93,7 @@ void Graph::generateGraph(int vertices2, float density)
         // Jeœli wierzcho³ek nie zosta³ odwiedzony
         if (!visited[i])
         {
-            int startV = std::uniform_int_distribution<int>(0, i - 1)(gen); // Losowanie wierzcho³ka pocz¹tkowego
+            int startV = uniform_int_distribution<int>(0, i - 1)(gen); // Losowanie wierzcho³ka pocz¹tkowego
             startVertices[edgeCount] = startV; // Ustawienie wierzcho³ka pocz¹tkowego krawêdzi
             endVertices[edgeCount] = i; // Ustawienie wierzcho³ka koñcowego krawêdzi
             weights[edgeCount] = distribution(gen); // Ustawienie wagi krawêdzi
@@ -106,8 +106,8 @@ void Graph::generateGraph(int vertices2, float density)
     // Dodanie pozosta³ych krawêdzi, aby osi¹gn¹æ ¿¹dan¹ gêstoœæ
     while (edgeCount < edges)
     {
-        int startV = std::uniform_int_distribution<int>(0, vertices2 - 1)(gen); // Losowanie wierzcho³ka pocz¹tkowego
-        int endV = std::uniform_int_distribution<int>(0, vertices2 - 1)(gen); // Losowanie wierzcho³ka koñcowego
+        int startV = uniform_int_distribution<int>(0, vertices2 - 1)(gen); // Losowanie wierzcho³ka pocz¹tkowego
+        int endV = uniform_int_distribution<int>(0, vertices2 - 1)(gen); // Losowanie wierzcho³ka koñcowego
         if (startV != endV)
         {
             startVertices[edgeCount] = startV; // Ustawienie wierzcho³ka pocz¹tkowego krawêdzi

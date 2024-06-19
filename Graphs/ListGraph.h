@@ -26,16 +26,16 @@ public:
     ~ListGraph();
 
     // Metoda wczytuj¹ca graf z pliku
-    void load_graph(string& filename, int mode);
+    void loadGraph(string& filename, int mode);
 
     // Metoda zapisuj¹ca graf do pliku
-    void save_graph();
+    void saveGraph() const;
 
     // Metoda wyœwietlaj¹ca graf
-    void display_graph();
+    void displayGraph();
 
     // Metoda wype³niaj¹ca graf na podstawie obiektu Graph
-    void populateFromGraph(Graph& graph);
+    void loadGraphToGraph(Graph& graph);
 
     // Metoda sprawdzaj¹ca, czy graf jest poprawny
     bool isGraphValid() const;

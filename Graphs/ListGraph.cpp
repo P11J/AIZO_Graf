@@ -24,7 +24,7 @@ ListGraph::ListGraph() : vertices(0), edges(0), edgeCounts(nullptr), adjacencyLi
         adjacencyList[i] = new MyPair<int, int>[edgeCounts[i]]; // Inicjalizacja list s¹siedztwa
         for (int j = 0; j < edgeCounts[i]; ++j)
         {
-            adjacencyList[i][j] = MyPair<int, int>(0, 0); // Inicjalizacja par (wierzcho³ek, waga)
+            adjacencyList[i][j] = MyPair<int, int>(0, 0); // Inicjalizacja par (wierzcho³ek, weight)
         }
     }
 }
@@ -47,7 +47,7 @@ ListGraph::~ListGraph()
 }
 
 // Metoda wczytuj¹ca graf z pliku
-void ListGraph::load_graph(string& filename, int mode)
+void ListGraph::loadGraph(string& filename, int mode)
 {
     ifstream file; // Strumieñ plikowy do odczytu
     file.open(filename); // Otwarcie pliku
@@ -104,7 +104,7 @@ void ListGraph::load_graph(string& filename, int mode)
 }
 
 // Metoda wyœwietlaj¹ca graf
-void ListGraph::display_graph()
+void ListGraph::displayGraph()
 {
     if (!isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
@@ -112,9 +112,9 @@ void ListGraph::display_graph()
         return;
     }
 
-    cout << "Lista sasiedztwa:" << endl;
-    for (int i = 0; i < vertices; i++)
-    {
+    cout << "\nLista sasiedztwa:" << endl;
+    cout << "Nr wierzcholka: (nr wierzcholka koncowego, waga)\n";
+    for (int i = 0; i < vertices; i++){
         cout << "Wierzcholek " << i << ": ";
         for (int j = 0; j < edgeCounts[i]; j++)
         {
@@ -132,14 +132,13 @@ bool ListGraph::isGraphValid() const
 }
 
 // Metoda zapisuj¹ca graf do pliku
-void ListGraph::save_graph()
+void ListGraph::saveGraph() const
 {
     if (isGraphValid()) // Sprawdzenie, czy graf jest poprawny
     {
         string filename;
         cout << "Podaj nazwe pliku do zapisania listy sasiedztwa: " << endl;
         cin >> filename;
-        filename += ".txt";
         ofstream file;
 
         file.open(filename); // Otwarcie pliku do zapisu
@@ -169,7 +168,7 @@ void ListGraph::save_graph()
 }
 
 // Metoda wype³niaj¹ca graf na podstawie obiektu Graph
-void ListGraph::populateFromGraph(Graph& graph)
+void ListGraph::loadGraphToGraph(Graph& graph)
 {
     // Czyszczenie poprzedniej listy s¹siedztwa, jeœli istnieje
     if (adjacencyList)
